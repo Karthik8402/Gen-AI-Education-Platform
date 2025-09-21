@@ -1,0 +1,114 @@
+/* ✅ BEAUTIFUL RANGE SLIDER */
+.professional-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 5px;
+  background: linear-gradient(to right, 
+    #6366f1 0%, 
+    #6366f1 var(--progress, 0%), 
+    #e5e7eb var(--progress, 0%), 
+    #e5e7eb 100%);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.professional-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 3px solid #6366f1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3), 0 0 0 0 rgba(99, 102, 241, 0.4);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.professional-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4), 0 0 0 4px rgba(99, 102, 241, 0.1);
+  border-color: #4f46e5;
+}
+
+.professional-slider::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.5), 0 0 0 6px rgba(99, 102, 241, 0.15);
+}
+
+.professional-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 3px solid #6366f1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  transition: all 0.2s ease;
+}
+
+.professional-slider::-moz-range-track {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 5px;
+}
+
+/* ✅ PROFESSIONAL INPUT FIELD */
+.topic-input-container {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.topic-input {
+  width: 100%;
+  padding: 1.25rem 1rem 0.75rem 1rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.topic-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.topic-input:focus + .topic-label,
+.topic-input:not(:placeholder-shown) + .topic-label {
+  transform: translateY(-0.5rem) scale(0.85);
+  color: #6366f1;
+  font-weight: 600;
+}
+
+.topic-label {
+  position: absolute;
+  left: 1rem;
+  top: 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #9ca3af;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  transform-origin: left top;
+  background: #ffffff;
+  padding: 0 0.25rem;
+}
+
+.input-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  transition: color 0.3s ease;
+}
+
+.topic-input:focus ~ .input-icon {
+  color: #6366f1;
+}
