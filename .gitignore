@@ -1,0 +1,91 @@
+# ============================================================================
+# AI EDUCATION PLATFORM - .gitignore
+# ============================================================================
+
+# ============================================================================
+# 🔴 NEVER UPLOAD THESE (Security & Size)
+# ============================================================================
+
+# Environment Variables & Secrets
+.env
+.env.*
+.env.local
+.env.production
+.env.development
+backend/.env*
+back-end/.env*
+frontend/.env*
+
+# API Keys & Credentials  
+config.py
+secrets.json
+*.key
+*.pem
+
+# ============================================================================
+# 🐍 PYTHON (Flask Backend)
+# ============================================================================
+
+# Virtual Environment
+backend/venv/
+back-end/venv/
+backend/env/
+back-end/env/
+venv/
+env/
+
+# Python Cache
+backend/__pycache__/
+back-end/__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask Instance
+backend/instance/
+back-end/instance/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================================================
+# ⚛️ REACT/NODE.JS (Frontend)
+# ============================================================================
+
+# Dependencies  
+frontend/node_modules/
+node_modules/
+
+# Build Output
+frontend/build/
+frontend/dist/
+build/
+dist/
+
+# ============================================================================
+# 🛠️ DEVELOPMENT & IDE
+# ============================================================================
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# OS Generated
+.DS_Store
+Thumbs.db
+
+# ============================================================================
+# 📊 LARGE FILES
+# ============================================================================
+
+# Large Model Files
+*.pkl
+*.h5
+models/
+data/
+
+# Logs
+*.log
+logs/
