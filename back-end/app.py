@@ -40,6 +40,29 @@ genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
 app = Flask(__name__)
 # Allow any origin on /api/*, permit JSON headers and credentials
+# Production-ready CORS configuration for Railway
+def get_cors_origins():
+    """Get allowed origins based on environment"""
+    # Development origins
+    dev_origins = [
+        "http://localhost:5173",  # Vite dev server
+        "http://localhost:3000",  # React dev server
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000"
+    ]
+    
+    # Production origins (you'll add these after deployment)
+    prod_origins = [
+        "https://karthik8402.github.io",  # GitHub Pages
+        "https://your-frontend.netlify.app",  # Netlify (update with actual URL)
+        "https://your-frontend.vercel.app",   # Vercel (update with actual URL)
+    ]
+    
+    # Railway environment detection
+    if os.environ.get('RAILWAY_ENVIRONMENT') == 'production':
+        return dev_origins + prod_origins  # Allow both for testing
+    else:
+        return dev_origins
 CORS(
     app,
     resources={r"/api/*": {"origins": ["http://localhost:5173", "http://localhost:3000"]}},
@@ -3511,19 +3534,39 @@ def log_request():
 # ========================================
 if __name__ == "__main__":
     # Initialize sample data and train ML models
-    create_sample_data()
-    ensure_indexes()
-    
-    # Train ML models with sample data
     try:
-        ml_predictor.train_model()
-        logger.info("✅ ML models trained successfully")
+        create_sample_data()
+        ensure_indexes()
+        
+        # Train ML models with sample data
+        try:
+            ml_predictor.train_model()
+            print("✅ ML models trained successfully")
+        except Exception as e:
+            print(f"⚠️ ML model training failed: {e}")
+        
+        print("🚀 Starting Advanced AI-Powered Education Backend...")
+        print("🤖 Features: Random Forest ML, spaCy NLP, Personalized Content")
+        print(f"📊 ML Models: {'Trained' if ml_predictor.is_trained else 'Not Trained'}")
+        print(f"🧠 spaCy Model: {spacy_model or 'Not Available'}")
+        
+        # Railway-compatible port configuration
+        port = int(os.environ.get("PORT", 5000))
+        debug_mode = os.environ.get('RAILWAY_ENVIRONMENT') != 'production'
+        
+        print(f"🌐 Server starting on port {port}")
+        print(f"🔧 Debug mode: {debug_mode}")
+        print(f"🌍 Environment: {os.environ.get('RAILWAY_ENVIRONMENT', 'development')}")
+        
+        app.run(
+            host='0.0.0.0', 
+            port=port, 
+            debug=debug_mode,
+            threaded=True  # Better for Railway performance
+        )
+        
     except Exception as e:
-        logger.warning(f"⚠️ ML model training failed: {e}")
-    
-    print("🚀 Starting Advanced AI-Powered Education Backend...")
-    print("🤖 Features: Random Forest ML, spaCy NLP, Personalized Content")
-    print(f"📊 ML Models: {'Trained' if ml_predictor.is_trained else 'Not Trained'}")
-    print(f"🧠 spaCy Model: {spacy_model or 'Not Available'}")
-    
-    app.run(debug=True, port=5000)
+        print(f"❌ Failed to start application: {e}")
+        # Still try to start the basic Flask app
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host='0.0.0.0', port=port, debug=False)

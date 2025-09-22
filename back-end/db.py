@@ -1,6 +1,6 @@
 import os
 import json
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 from pymongo.errors import ConnectionFailure, ConfigurationError
 from bson import ObjectId
 from datetime import datetime
@@ -211,15 +211,21 @@ class MockCollection:
         print(f"📝 Mock database: create_index called with {args}, {kwargs}")
         pass
 
-    def find_one_and_update(self, filter_query, update_query):
-        """Mock find_one_and_update method"""
+    # in MockCollection
+    def find_one_and_update(self, filter_query, update_query, **kwargs):
         doc = self.find_one(filter_query)
         if doc:
-            # Apply updates (simplified implementation)
-            for key, value in update_query.get("$set", {}).items():
-                doc[key] = value
-            print(f"🔄 Updated document: {doc}")
+            for k, v in update_query.get("$set", {}).items():
+                # handle dotted paths
+                current = doc
+                parts = k.split(".")
+                for p in parts[:-1]:
+                    if p not in current or not isinstance(current[p], dict):
+                        current[p] = {}
+                    current = current[p]
+                current[parts[-1]] = v
         return doc
+
 
     def update_one(self, filter_query, update_data, upsert=False):
         """✅ CRITICAL FIX: Add missing update_one method"""
