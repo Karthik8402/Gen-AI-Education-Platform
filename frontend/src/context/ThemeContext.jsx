@@ -13,9 +13,10 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState('light')
+  const [currentTheme, setCurrentTheme] = useState('light') // ✅ ADD THIS
   const [mounted, setMounted] = useState(false)
 
-  // Apply theme function without debug logs
+  // Apply theme function
   const applyTheme = (themeToApply) => {
     const root = document.documentElement
     const body = document.body
@@ -41,6 +42,8 @@ export const ThemeProvider = ({ children }) => {
       document.body.style.backgroundColor = '#ffffff'
       document.body.style.color = '#111827'
     }
+    
+    setCurrentTheme(themeToApply) // ✅ ADD THIS LINE
   }
 
   // Initialize theme on component mount
@@ -49,7 +52,6 @@ export const ThemeProvider = ({ children }) => {
       const savedTheme = localStorage.getItem('theme')
       const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
       
-      // Start with light mode by default
       const initialTheme = savedTheme && ['light', 'dark', 'system'].includes(savedTheme) 
         ? savedTheme 
         : 'light'
@@ -103,19 +105,9 @@ export const ThemeProvider = ({ children }) => {
     }
   }
 
-  // Get current effective theme
-  const getCurrentTheme = () => {
-    if (!mounted) return 'light'
-    
-    if (theme === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    }
-    return theme
-  }
-
   const contextValue = {
     theme,
-    currentTheme: getCurrentTheme(),
+    currentTheme, // ✅ FIXED: Now a reactive state variable
     changeTheme,
     mounted,
     themes: [
@@ -131,5 +123,5 @@ export const ThemeProvider = ({ children }) => {
     </ThemeContext.Provider>
   )
 }
- 
+
 export default ThemeProvider

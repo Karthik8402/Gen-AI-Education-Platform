@@ -328,32 +328,28 @@ export default function StudentDashboard() {
   }
 
   // No data state
+  // ✅ BETTER OPTION - Show dashboard with zero stats
   if (!data || !data.performance || data.performance.totalAttempts === 0) {
-    return (
-      <div className={`${mainBgClass} transition-colors duration-300`}>
-        <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
-          <div className="text-center py-20">
-            <Brain className={`w-20 h-20 mx-auto mb-6 ${
-              currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-            }`} />
-            <h3 className={`text-2xl font-bold mb-4 ${
-              currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-            }`}>No Analytics Data Available</h3>
-            <p className={`mb-8 text-lg ${
-              currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-            }`}>Start taking quizzes to see your personalized dashboard.</p>
-            <Link 
-              to="/quiz/interface" 
-              className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-            >
-              <PlayCircle className="w-5 h-5 mr-2" />
-              Take Your First Quiz
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
+    // Set default empty data structure
+    const emptyData = {
+      performance: {
+        totalAttempts: 0,
+        totalQuestions: 0,
+        totalCorrect: 0,
+        overallAccuracy: 0,
+        learningStreak: 0
+      },
+      student: {
+        username: user?.username || user?.email?.split('@')[0] || 'Student',
+        currentSkillLevel: 'beginner'
+      },
+      recentActivity: [],
+      insights: {
+        recommendations: []
+      },
+      lastUpdated: new Date().toISOString(),
+      dataRange: 'No quiz attempts yet'
+    }
   }
 
   // Extract data from API response

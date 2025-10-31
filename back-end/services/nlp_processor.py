@@ -35,7 +35,7 @@ class AdvancedEducationalNLP:
         try:
             self.nlp = spacy.load(model_name)
             self.setup_educational_patterns()
-            logger.info(f"✅ Loaded spaCy large model: {model_name}")
+            logger.info(f"✅ Loaded spaCy model: {model_name}")
         except OSError:
             logger.error(f"❌ spaCy model {model_name} not found. Install with: python -m spacy download {model_name}")
             try:
@@ -570,7 +570,7 @@ class AdvancedEducationalNLP:
             
             # Generate content using LLM
             logger.info(f"🎯 Generating {content_type} content for {topic} ({difficulty_level} level)")
-            response = genai.GenerativeModel('gemini-1.5-flash').generate_content(prompt)
+            response = genai.GenerativeModel('gemini-2.5-flash').generate_content(prompt)
             raw_content = response.text.strip()
             
             if not raw_content:
@@ -1008,7 +1008,7 @@ OUTPUT FORMAT (JSON Array):
 Generate exactly {num_questions} questions in this JSON format.
 """
 
-            response = self.genai.GenerativeModel('gemini-1.5-flash').generate_content(prompt)
+            response = self.genai.GenerativeModel('gemini-2.5-flash').generate_content(prompt)
             
             # Parse and process AI response
             questions = self._parse_ai_response(response.text, topic, difficulty_level)

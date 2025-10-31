@@ -52,20 +52,17 @@ const EnhancedQuizQuestion = ({ question, questionNumber, onAnswer }) => {
   }
 
   return (
-    <div className={`rounded-xl p-6 border shadow-sm hover:shadow-md transition-all duration-200 ${
-      currentTheme === 'dark'
+    <div className={`rounded-xl p-6 border shadow-sm hover:shadow-md transition-all duration-200 ${currentTheme === 'dark'
         ? 'bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border-blue-700'
         : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200'
-    }`}>
+      }`}>
       <div className="flex justify-between items-start mb-4">
-        <h4 className={`font-semibold text-lg pr-4 transition-colors duration-300 ${
-          currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-        }`}>
-          <span className={`px-2 py-1 rounded-full text-sm mr-2 ${
-            currentTheme === 'dark'
+        <h4 className={`font-semibold text-lg pr-4 transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+          }`}>
+          <span className={`px-2 py-1 rounded-full text-sm mr-2 ${currentTheme === 'dark'
               ? 'bg-blue-900/30 text-blue-300'
               : 'bg-blue-100 text-blue-800'
-          }`}>
+            }`}>
             Q{questionNumber}
           </span>
           {question.question}
@@ -73,11 +70,10 @@ const EnhancedQuizQuestion = ({ question, questionNumber, onAnswer }) => {
         {!showExplanation && (
           <button
             onClick={() => setShowHint(!showHint)}
-            className={`transition-colors ${
-              currentTheme === 'dark'
+            className={`transition-colors ${currentTheme === 'dark'
                 ? 'text-blue-400 hover:text-blue-300'
                 : 'text-blue-600 hover:text-blue-800'
-            }`}
+              }`}
             title="Show hint"
           >
             <Lightbulb size={20} />
@@ -86,11 +82,10 @@ const EnhancedQuizQuestion = ({ question, questionNumber, onAnswer }) => {
       </div>
 
       {showHint && !showExplanation && (
-        <div className={`mb-4 p-3 border rounded-lg ${
-          currentTheme === 'dark'
+        <div className={`mb-4 p-3 border rounded-lg ${currentTheme === 'dark'
             ? 'bg-yellow-900/20 border-yellow-700 text-yellow-300'
             : 'bg-yellow-50 border-yellow-200 text-yellow-800'
-        }`}>
+          }`}>
           <p className="text-sm">
             💡 <strong>Hint:</strong> Think about the key concepts we discussed in the explanation above.
           </p>
@@ -101,15 +96,14 @@ const EnhancedQuizQuestion = ({ question, questionNumber, onAnswer }) => {
         {question.choices?.map((choice, idx) => (
           <label
             key={idx}
-            className={`flex items-center space-x-3 cursor-pointer p-3 rounded-lg border transition-all duration-200 ${
-              selectedAnswer === choice
+            className={`flex items-center space-x-3 cursor-pointer p-3 rounded-lg border transition-all duration-200 ${selectedAnswer === choice
                 ? currentTheme === 'dark'
                   ? 'bg-blue-900/30 border-blue-600 ring-2 ring-blue-500/30'
                   : 'bg-blue-100 border-blue-300 ring-2 ring-blue-200'
                 : currentTheme === 'dark'
                   ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500'
                   : 'bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300'
-            } ${showExplanation ? 'pointer-events-none' : ''}`}
+              } ${showExplanation ? 'pointer-events-none' : ''}`}
           >
             <input
               type="radio"
@@ -120,9 +114,8 @@ const EnhancedQuizQuestion = ({ question, questionNumber, onAnswer }) => {
               className="form-radio text-blue-600 w-4 h-4"
               disabled={showExplanation}
             />
-            <span className={`flex-1 transition-colors duration-300 ${
-              currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-700'
-            }`}>{choice}</span>
+            <span className={`flex-1 transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-700'
+              }`}>{choice}</span>
             {getChoiceIcon(choice)}
           </label>
         ))}
@@ -139,15 +132,14 @@ const EnhancedQuizQuestion = ({ question, questionNumber, onAnswer }) => {
       )}
 
       {showExplanation && (
-        <div className={`mt-4 p-4 rounded-lg border-l-4 transition-all duration-300 ${
-          isCorrect
+        <div className={`mt-4 p-4 rounded-lg border-l-4 transition-all duration-300 ${isCorrect
             ? currentTheme === 'dark'
               ? 'bg-green-900/20 border-green-500 text-green-300'
               : 'bg-green-50 border-green-400 text-green-800'
             : currentTheme === 'dark'
               ? 'bg-red-900/20 border-red-500 text-red-300'
               : 'bg-red-50 border-red-400 text-red-800'
-        }`}>
+          }`}>
           <div className="flex items-center mb-2">
             {isCorrect ? (
               <CheckCircle className="mr-2 text-green-600" size={20} />
@@ -162,11 +154,10 @@ const EnhancedQuizQuestion = ({ question, questionNumber, onAnswer }) => {
             <strong>Correct Answer:</strong> {question.answer}
           </p>
           {question.explanation && (
-            <div className={`mt-3 p-3 rounded border ${
-              currentTheme === 'dark'
+            <div className={`mt-3 p-3 rounded border ${currentTheme === 'dark'
                 ? 'bg-gray-800/50'
                 : 'bg-white/50'
-            }`}>
+              }`}>
               <p><strong>💡 Explanation:</strong> {question.explanation}</p>
             </div>
           )}
@@ -183,13 +174,12 @@ const ContentTab = ({ icon: Icon, label, isActive, onClick, badge }) => {
   return (
     <button
       onClick={onClick}
-      className={`relative px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${
-        isActive
+      className={`relative px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 ${isActive
           ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg transform scale-105'
           : currentTheme === 'dark'
             ? 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-gray-100 shadow-md hover:shadow-lg border border-gray-600'
             : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-800 shadow-md hover:shadow-lg border border-gray-200'
-      }`}
+        }`}
     >
       <Icon size={18} />
       <span>{label}</span>
@@ -226,47 +216,42 @@ const CodeFrameBlock = ({ content, currentTheme }) => {
   const icon = contentType === 'code' ? '💻' : contentType === 'url' ? '🌐' : '📝'
 
   return (
-    <div className={`relative rounded-xl border overflow-hidden transition-colors duration-300 ${
-      currentTheme === 'dark'
+    <div className={`relative rounded-xl border overflow-hidden transition-colors duration-300 ${currentTheme === 'dark'
         ? 'bg-gray-800 border-gray-600'
         : 'bg-white border-gray-200'
-    }`}>
+      }`}>
       {/* Header with icon and copy button */}
-      <div className={`flex justify-between items-center px-4 py-3 border-b transition-colors duration-300 ${
-        currentTheme === 'dark'
+      <div className={`flex justify-between items-center px-4 py-3 border-b transition-colors duration-300 ${currentTheme === 'dark'
           ? 'bg-gray-700 border-gray-600'
           : 'bg-gray-50 border-gray-200'
-      }`}>
+        }`}>
         <div className="flex items-center space-x-2">
           <span className="text-lg">{icon}</span>
-          <span className={`text-sm font-medium transition-colors duration-300 ${
-            currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-          }`}>
+          <span className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}>
             {contentType === 'code' ? 'Code Example' : contentType === 'url' ? 'URL' : 'Content'}
           </span>
         </div>
         <button
           onClick={copyContent}
-          className={`flex items-center space-x-2 px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
-            currentTheme === 'dark'
+          className={`flex items-center space-x-2 px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${currentTheme === 'dark'
               ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-600'
               : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-          }`}
+            }`}
         >
           <Copy size={14} />
           <span>{copied ? 'Copied!' : 'Copy'}</span>
         </button>
       </div>
-      
+
       {/* Content */}
       <div className="p-6">
-        <div className={`font-mono text-sm leading-relaxed transition-colors duration-300 ${
-          currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-800'
-        }`}>
+        <div className={`font-mono text-sm leading-relaxed transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-800'
+          }`}>
           {content.split('\n').map((line, lineIndex) => {
             const trimmedLine = line.trim()
             if (!trimmedLine) return <div key={lineIndex} className="h-4"></div>
-            
+
             return (
               <div key={lineIndex} className="mb-2">
                 {formatBoldText(trimmedLine.replace(/```[\w]*|```/g, ''), currentTheme)}
@@ -292,10 +277,10 @@ const ContentListBlock = ({ content, currentTheme }) => {
 
   cleanContent.forEach((line, index) => {
     const trimmedLine = line.trim()
-    
+
     // Check if it's a category header (contains ** or is standalone)
-    if ((trimmedLine.includes('**') && !trimmedLine.startsWith('-  ') && !trimmedLine.startsWith('* ')) || 
-        (!trimmedLine.startsWith('-  ') && !trimmedLine.startsWith('* ') && index === 0)) {
+    if ((trimmedLine.includes('**') && !trimmedLine.startsWith('-  ') && !trimmedLine.startsWith('* ')) ||
+      (!trimmedLine.startsWith('-  ') && !trimmedLine.startsWith('* ') && index === 0)) {
       currentCategory = trimmedLine.replace(/\*\*/g, '')
       items.push({ type: 'category', content: currentCategory })
     }
@@ -311,19 +296,17 @@ const ContentListBlock = ({ content, currentTheme }) => {
   })
 
   return (
-    <div className={`rounded-xl border p-6 transition-colors duration-300 ${
-      currentTheme === 'dark'
+    <div className={`rounded-xl border p-6 transition-colors duration-300 ${currentTheme === 'dark'
         ? 'bg-gradient-to-r from-gray-800 to-gray-700 border-gray-600'
         : 'bg-gradient-to-r from-gray-50 to-blue-50 border-gray-200'
-    }`}>
+      }`}>
       <div className="space-y-4">
         {items.map((item, itemIndex) => {
           if (item.type === 'category') {
             return (
               <div key={itemIndex} className="mb-4">
-                <h4 className={`text-lg font-bold flex items-center transition-colors duration-300 ${
-                  currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-                }`}>
+                <h4 className={`text-lg font-bold flex items-center transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+                  }`}>
                   <span className="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mr-3"></span>
                   {item.content}
                 </h4>
@@ -333,18 +316,16 @@ const ContentListBlock = ({ content, currentTheme }) => {
             return (
               <div key={itemIndex} className="flex items-start space-x-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mt-3 shrink-0"></div>
-                <div className={`flex-1 leading-relaxed transition-colors duration-300 ${
-                  currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                }`}>
+                <div className={`flex-1 leading-relaxed transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
                   {formatBoldText(item.content, currentTheme)}
                 </div>
               </div>
             )
           } else {
             return (
-              <div key={itemIndex} className={`leading-relaxed transition-colors duration-300 ${
-                currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>
+              <div key={itemIndex} className={`leading-relaxed transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
                 {formatBoldText(item.content, currentTheme)}
               </div>
             )
@@ -427,31 +408,26 @@ const ContentBlock = ({ content, language = 'text', title = 'Content', type = 't
 
   // For regular content
   return (
-    <div className={`relative rounded-lg border overflow-hidden transition-colors duration-300 ${
-      currentTheme === 'dark'
+    <div className={`relative rounded-lg border overflow-hidden transition-colors duration-300 ${currentTheme === 'dark'
         ? 'bg-gray-800 border-gray-600'
         : 'bg-white border-gray-200'
-    }`}>
-      <div className={`flex justify-between items-center px-4 py-3 border-b transition-colors duration-300 ${
-        currentTheme === 'dark'
+      }`}>
+      <div className={`flex justify-between items-center px-4 py-3 border-b transition-colors duration-300 ${currentTheme === 'dark'
           ? 'bg-gray-700 border-gray-600'
           : 'bg-gray-50 border-gray-200'
-      }`}>
+        }`}>
         <div className="flex items-center space-x-2">
-          <FileText className={`w-4 h-4 ${
-            currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-          }`} />
-          <span className={`text-sm font-medium transition-colors duration-300 ${
-            currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-          }`}>{title}</span>
+          <FileText className={`w-4 h-4 ${currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`} />
+          <span className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}>{title}</span>
         </div>
         <button
           onClick={copyContent}
-          className={`transition-colors flex items-center space-x-1 px-2 py-1 rounded text-sm ${
-            currentTheme === 'dark'
+          className={`transition-colors flex items-center space-x-1 px-2 py-1 rounded text-sm ${currentTheme === 'dark'
               ? 'text-gray-400 hover:text-gray-200'
               : 'text-gray-600 hover:text-gray-800'
-          }`}
+            }`}
         >
           <Copy size={14} />
           <span>{copied ? 'Copied!' : 'Copy'}</span>
@@ -469,21 +445,38 @@ const ContentBlock = ({ content, language = 'text', title = 'Content', type = 't
 // ✅ FIXED: Enhanced content formatting with proper styling
 const formatContentWithAdvancedHeadings = (text, currentTheme) => {
   if (!text) return null
-
+  
   // Split content into sections and process each
   const sections = text.split('\n\n').filter(section => section.trim())
   
   return sections.map((section, index) => {
     const trimmedSection = section.trim()
     
-    // ✅ FIXED: Main headings with emoji (✨ For Visual Learners:)
+    // ✅ FIXED: Emoji headings with proper heading extraction
     if (trimmedSection.match(/^[✨🎯📚💡⭐🔥💻🧠🔍📊🎨]\s*(.+):$/m)) {
       const lines = trimmedSection.split('\n')
-      const headingLine = lines
+      
+      // ✅ FIX: Get first line as string, not entire array
+      const headingLine = String(lines[0] || '')
       const content = lines.slice(1).join('\n').trim()
       
-      const [emoji, ...titleParts] = headingLine.split(' ')
-      const title = titleParts.join(' ').replace(':', '')
+      // More robust parsing: split on whitespace and strip trailing colon
+      const parts = headingLine.split(/\s+/)
+      const emoji = parts.shift() || ''
+      const title = parts.join(' ').replace(/:\s*$/, '').trim()
+      
+      // ✅ Add safety check for empty emoji or title
+      if (!emoji || !title) {
+        return (
+          <div key={index} className="mb-6">
+            <div className={`p-4 rounded-lg ${currentTheme === 'dark' ? 'bg-gray-800/30' : 'bg-white/50'}`}>
+              <p className={currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                {formatBoldText(trimmedSection, currentTheme)}
+              </p>
+            </div>
+          </div>
+        )
+      }
       
       return (
         <div key={index} className="mb-10">
@@ -503,7 +496,6 @@ const formatContentWithAdvancedHeadings = (text, currentTheme) => {
         </div>
       )
     }
-    
     // ✅ FIXED: Code blocks detection and special formatting
     else if (trimmedSection.includes('```')) {
       return (
@@ -512,45 +504,42 @@ const formatContentWithAdvancedHeadings = (text, currentTheme) => {
         </div>
       )
     }
-    
+
     // ✅ FIXED: Step-by-step instructions (numbered items with descriptions)
     else if (trimmedSection.match(/^\d+\.\s+/)) {
       const steps = trimmedSection.split(/(?=\d+\.\s+)/).filter(item => item.trim())
-      
+
       return (
         <div key={index} className="mb-8">
           <div className="space-y-6">
             {steps.map((step, stepIndex) => {
               const match = step.match(/^(\d+)\.\s+(.+)/s)
               if (!match) return null
-              
+
               const [, number, content] = match
               const [title, ...details] = content.split('\n')
-              
+
               return (
-                <div key={stepIndex} className={`rounded-xl p-6 border-l-4 border-blue-500 transition-colors duration-300 ${
-                  currentTheme === 'dark' 
-                    ? 'bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border-blue-400' 
+                <div key={stepIndex} className={`rounded-xl p-6 border-l-4 border-blue-500 transition-colors duration-300 ${currentTheme === 'dark'
+                    ? 'bg-gradient-to-r from-blue-900/20 to-indigo-900/20 border-blue-400'
                     : 'bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-500'
-                }`}>
+                  }`}>
                   <div className="flex items-start space-x-4">
                     <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-bold flex items-center justify-center shrink-0 text-lg shadow-lg">
                       {number}
                     </div>
                     <div className="flex-1">
-                      <h3 className={`text-lg font-bold mb-3 transition-colors duration-300 ${
-                        currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-                      }`}>
+                      <h3 className={`text-lg font-bold mb-3 transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+                        }`}>
                         {formatBoldText(title.trim(), currentTheme)}
                       </h3>
                       {details.length > 0 && (
-                        <div className={`leading-relaxed transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                        }`}>
+                        <div className={`leading-relaxed transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                          }`}>
                           {details.map((detail, detailIndex) => {
                             const trimmedDetail = detail.trim()
                             if (!trimmedDetail) return null
-                            
+
                             // ✅ FIXED: Handle sub-bullets in steps (corrected regex)
                             if (trimmedDetail.startsWith('• ') || trimmedDetail.startsWith('- ')) {
                               return (
@@ -560,7 +549,7 @@ const formatContentWithAdvancedHeadings = (text, currentTheme) => {
                                 </div>
                               )
                             }
-                            
+
                             return (
                               <div key={detailIndex} className="mt-2">
                                 {formatBoldText(trimmedDetail, currentTheme)}
@@ -578,7 +567,7 @@ const formatContentWithAdvancedHeadings = (text, currentTheme) => {
         </div>
       )
     }
-    
+
     // ✅ FIXED: Bullet points - Convert multiple bullets to clean list
     else if (trimmedSection.includes('• ') || (trimmedSection.match(/\*/g) && (trimmedSection.match(/\*/g).length > 2))) {
       return (
@@ -587,19 +576,17 @@ const formatContentWithAdvancedHeadings = (text, currentTheme) => {
         </div>
       )
     }
-    
+
     // ✅ FIXED: Regular paragraphs with better formatting
     else {
       return (
         <div key={index} className="mb-6">
-          <div className={`p-4 rounded-lg transition-colors duration-300 ${
-            currentTheme === 'dark' 
-              ? 'bg-gray-800/30' 
+          <div className={`p-4 rounded-lg transition-colors duration-300 ${currentTheme === 'dark'
+              ? 'bg-gray-800/30'
               : 'bg-white/50'
-          }`}>
-            <p className={`leading-relaxed text-lg transition-colors duration-300 ${
-              currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
             }`}>
+            <p className={`leading-relaxed text-lg transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              }`}>
               {formatBoldText(trimmedSection, currentTheme)}
             </p>
           </div>
@@ -612,37 +599,35 @@ const formatContentWithAdvancedHeadings = (text, currentTheme) => {
 // ✅ FIXED: Helper function for nested content formatting
 const formatNestedContent = (content, currentTheme) => {
   if (!content) return null
-  
+
   const lines = content.split('\n').filter(line => line.trim())
-  
+
   return lines.map((line, index) => {
     const trimmedLine = line.trim()
-    
+
     // ✅ FIXED: Handle bullet points with * or • (corrected regex)
     if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('• ')) {
       return (
         <div key={index} className="flex items-start mb-4">
           <span className="w-2 h-2 bg-blue-400 rounded-full mr-4 mt-3 shrink-0"></span>
-          <div className={`flex-1 leading-relaxed transition-colors duration-300 ${
-            currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-          }`}>
+          <div className={`flex-1 leading-relaxed transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+            }`}>
             {formatBoldText(trimmedLine.replace(/^[*•]\s+/, ''), currentTheme)}
           </div>
         </div>
       )
     }
-    
+
     // Regular content
     if (trimmedLine) {
       return (
-        <div key={index} className={`mb-3 leading-relaxed transition-colors duration-300 ${
-          currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-        }`}>
+        <div key={index} className={`mb-3 leading-relaxed transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+          }`}>
           {formatBoldText(trimmedLine, currentTheme)}
         </div>
       )
     }
-    
+
     return null
   }).filter(Boolean)
 }
@@ -650,14 +635,13 @@ const formatNestedContent = (content, currentTheme) => {
 // ✅ FIXED: Helper function for bold text formatting
 const formatBoldText = (text, currentTheme) => {
   if (!text) return ''
-  
+
   return text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/).map((part, index) => {
     // Handle **bold** text
     if (part.startsWith('**') && part.endsWith('**')) {
       return (
-        <strong key={index} className={`font-bold transition-colors duration-300 ${
-          currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-        }`}>
+        <strong key={index} className={`font-bold transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+          }`}>
           {part.slice(2, -2)}
         </strong>
       )
@@ -665,9 +649,8 @@ const formatBoldText = (text, currentTheme) => {
     // Handle *italic* text
     else if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
       return (
-        <em key={index} className={`italic transition-colors duration-300 ${
-          currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
-        }`}>
+        <em key={index} className={`italic transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
+          }`}>
           {part.slice(1, -1)}
         </em>
       )
@@ -675,16 +658,15 @@ const formatBoldText = (text, currentTheme) => {
     // Handle `code` text
     else if (part.startsWith('`') && part.endsWith('`')) {
       return (
-        <code key={index} className={`px-2 py-1 rounded text-sm font-mono transition-colors duration-300 ${
-          currentTheme === 'dark' 
-            ? 'bg-gray-700 text-blue-300 border border-gray-600' 
+        <code key={index} className={`px-2 py-1 rounded text-sm font-mono transition-colors duration-300 ${currentTheme === 'dark'
+            ? 'bg-gray-700 text-blue-300 border border-gray-600'
             : 'bg-gray-100 text-blue-800 border border-gray-200'
-        }`}>
+          }`}>
           {part.slice(1, -1)}
         </code>
       )
     }
-    
+
     return part
   })
 }
@@ -704,7 +686,7 @@ export default function EnhancedContentGenerator() {
   const [quizScore, setQuizScore] = useState(null)
   const [activeTab, setActiveTab] = useState('explanation')
   const { currentTheme } = useTheme()
-  
+
   // Fetch user profile on mount
   useEffect(() => {
     async function fetchProfile() {
@@ -757,7 +739,7 @@ export default function EnhancedContentGenerator() {
       }
 
       const data = await response.json()
-      
+
       // Handle different possible response structures from backend
       let processedData = data
 
@@ -766,26 +748,26 @@ export default function EnhancedContentGenerator() {
           ...data,
           content: {
             ...data.content,
-            explanation: data.content.explanation || 
-                        data.content.detailed_explanation || 
-                        data.content.content_explanation ||
-                        data.content.explanation_content,
-            
-            example: data.content.example || 
-                    data.content.examples || 
-                    data.content.practical_examples,
-            
-            exercise: data.content.exercise || 
-                     data.content.exercises || 
-                     data.content.practice_exercises,
-            
-            learning_tip: data.content.learning_tip || 
-                         data.content.learning_tips || 
-                         data.content.tips,
-            
-            quiz_questions: data.content.quiz_questions || 
-                           data.content.questions || 
-                           []
+            explanation: data.content.explanation ||
+              data.content.detailed_explanation ||
+              data.content.content_explanation ||
+              data.content.explanation_content,
+
+            example: data.content.example ||
+              data.content.examples ||
+              data.content.practical_examples,
+
+            exercise: data.content.exercise ||
+              data.content.exercises ||
+              data.content.practice_exercises,
+
+            learning_tip: data.content.learning_tip ||
+              data.content.learning_tips ||
+              data.content.tips,
+
+            quiz_questions: data.content.quiz_questions ||
+              data.content.questions ||
+              []
           }
         }
       }
@@ -862,35 +844,35 @@ export default function EnhancedContentGenerator() {
   const predictionConfidence = content?.content?.prediction_confidence || 0
 
   const tabs = [
-    { 
-      key: 'explanation', 
-      label: 'Explanation', 
-      icon: BookOpen, 
+    {
+      key: 'explanation',
+      label: 'Explanation',
+      icon: BookOpen,
       content: content?.content?.explanation,
       description: 'Comprehensive explanation of the topic'
     },
-    { 
+    {
       key: 'example',
       label: 'Examples',
       icon: Code2,
       content: content?.content?.example,
       description: 'Practical examples and demonstrations'
     },
-    { 
+    {
       key: 'exercise',
       label: 'Exercises',
       icon: Brain,
       content: content?.content?.exercise,
       description: 'Hands-on practice exercises'
     },
-    { 
+    {
       key: 'quiz',
       label: 'Assessment',
       icon: Target,
       content: content?.content?.quiz_questions,
       description: 'Test your understanding'
     },
-    { 
+    {
       key: 'tips',
       label: 'Learning Tips',
       icon: Lightbulb,
@@ -958,7 +940,7 @@ Generated by AI-Powered Educational Content Generator
 
   const detectContentLanguage = (content) => {
     if (!content) return 'text'
-    
+
     // Programming language detection
     if (content.includes('def ') || content.includes('import ') || content.includes('print(')) return 'python'
     if (content.includes('function ') || content.includes('const ') || content.includes('let ')) return 'javascript'
@@ -967,16 +949,15 @@ Generated by AI-Powered Educational Content Generator
     if (content.includes('SELECT ') || content.includes('FROM ')) return 'sql'
     if (content.includes('<html') || content.includes('<div')) return 'html'
     if (content.includes('{') && content.includes('color:')) return 'css'
-    
+
     return 'text'
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      currentTheme === 'dark'
+    <div className={`min-h-screen transition-colors duration-300 ${currentTheme === 'dark'
         ? 'bg-gradient-to-br from-gray-900 via-gray-800 to-gray-700'
         : 'bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100'
-    }`}>
+      }`}>
       <div className="mx-auto max-w-7xl px-6 py-8">
         {/* Enhanced Header with Theme */}
         <div className="text-center mb-12">
@@ -986,21 +967,18 @@ Generated by AI-Powered Educational Content Generator
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
             AI Content Generator
           </h1>
-          <p className={`text-xl max-w-3xl mx-auto mb-6 transition-colors duration-300 ${
-            currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-          }`}>
+          <p className={`text-xl max-w-3xl mx-auto mb-6 transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+            }`}>
             Generate personalized learning content with comprehensive quizzes powered by advanced AI and NLP
           </p>
           <div className="flex justify-center items-center flex-wrap gap-4">
-            <div className={`flex items-center px-4 py-2 border rounded-full shadow-sm transition-colors duration-300 ${
-              currentTheme === 'dark'
+            <div className={`flex items-center px-4 py-2 border rounded-full shadow-sm transition-colors duration-300 ${currentTheme === 'dark'
                 ? 'bg-gray-800 border-blue-700'
                 : 'bg-white border-blue-200'
-            }`}>
-              <Target className="w-4 h-4 text-blue-600 mr-2" />
-              <span className={`text-sm font-medium transition-colors duration-300 ${
-                currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
               }`}>
+              <Target className="w-4 h-4 text-blue-600 mr-2" />
+              <span className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
                 Predicted Level: <span className="text-blue-600">{predictedSkill.toUpperCase()}</span>
               </span>
               {predictionConfidence > 0 && (
@@ -1009,40 +987,34 @@ Generated by AI-Powered Educational Content Generator
                 </span>
               )}
             </div>
-            <div className={`flex items-center px-4 py-2 border rounded-full shadow-sm transition-colors duration-300 ${
-              currentTheme === 'dark'
+            <div className={`flex items-center px-4 py-2 border rounded-full shadow-sm transition-colors duration-300 ${currentTheme === 'dark'
                 ? 'bg-gray-800 border-green-700'
                 : 'bg-white border-green-200'
-            }`}>
+              }`}>
               <Zap className="w-4 h-4 text-green-600 mr-2" />
-              <span className={`text-sm font-medium transition-colors duration-300 ${
-                currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>Powered by Gemini Flash</span>
+              <span className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>Powered by Gemini Flash</span>
             </div>
-            <div className={`flex items-center px-4 py-2 border rounded-full shadow-sm transition-colors duration-300 ${
-              currentTheme === 'dark'
+            <div className={`flex items-center px-4 py-2 border rounded-full shadow-sm transition-colors duration-300 ${currentTheme === 'dark'
                 ? 'bg-gray-800 border-purple-700'
                 : 'bg-white border-purple-200'
-            }`}>
+              }`}>
               <BookMarked className="w-4 h-4 text-purple-600 mr-2" />
-              <span className={`text-sm font-medium transition-colors duration-300 ${
-                currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-              }`}>spaCy Enhanced</span>
+              <span className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>spaCy Enhanced</span>
             </div>
           </div>
         </div>
 
         {/* Enhanced Input Form with Theme */}
-        <div className={`rounded-3xl border p-8 shadow-xl mb-8 backdrop-blur-sm transition-colors duration-300 ${
-          currentTheme === 'dark'
+        <div className={`rounded-3xl border p-8 shadow-xl mb-8 backdrop-blur-sm transition-colors duration-300 ${currentTheme === 'dark'
             ? 'bg-gray-800 border-gray-700'
             : 'bg-white border-gray-200'
-        }`}>
+          }`}>
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="lg:col-span-3">
-              <label className={`text-lg font-semibold mb-4 flex items-center transition-colors duration-300 ${
-                currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
-              }`}>
+              <label className={`text-lg font-semibold mb-4 flex items-center transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
+                }`}>
                 <FileText className="w-5 h-5 mr-2 text-blue-600" />
                 What would you like to learn today?
               </label>
@@ -1051,18 +1023,16 @@ Generated by AI-Powered Educational Content Generator
                 value={form.topic}
                 onChange={onChange}
                 placeholder="Search for any topic, e.g., Quantum Computing, French Grammar, Python Programming..."
-                className={`w-full px-6 py-4 border-2 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-lg transition-all ${
-                  currentTheme === 'dark'
+                className={`w-full px-6 py-4 border-2 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 text-lg transition-all ${currentTheme === 'dark'
                     ? 'border-gray-600 bg-gray-700 text-gray-100 placeholder:text-gray-400'
                     : 'border-gray-200 bg-white text-gray-900 placeholder:text-gray-400'
-                }`}
+                  }`}
               />
             </div>
 
             <div>
-              <label className={`text-lg font-semibold mb-4 flex items-center transition-colors duration-300 ${
-                currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
-              }`}>
+              <label className={`text-lg font-semibold mb-4 flex items-center transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
+                }`}>
                 <BookOpen className="w-5 h-5 mr-2 text-purple-600" />
                 Content Focus
               </label>
@@ -1070,11 +1040,10 @@ Generated by AI-Powered Educational Content Generator
                 name="contentType"
                 value={form.contentType}
                 onChange={onChange}
-                className={`w-full px-4 py-4 border-2 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-lg transition-all ${
-                  currentTheme === 'dark'
+                className={`w-full px-4 py-4 border-2 rounded-xl focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 text-lg transition-all ${currentTheme === 'dark'
                     ? 'border-gray-600 bg-gray-700 text-gray-100'
                     : 'border-gray-200 bg-white text-gray-900'
-                }`}
+                  }`}
               >
                 <option value="explanation">📖 Comprehensive Explanation</option>
                 <option value="examples">💡 Practical Examples</option>
@@ -1085,9 +1054,8 @@ Generated by AI-Powered Educational Content Generator
             </div>
 
             <div>
-              <label className={`text-lg font-semibold mb-4 flex items-center transition-colors duration-300 ${
-                currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
-              }`}>
+              <label className={`text-lg font-semibold mb-4 flex items-center transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-200' : 'text-gray-800'
+                }`}>
                 <TrendingUp className="w-5 h-5 mr-2 text-green-600" />
                 Difficulty Level
               </label>
@@ -1095,11 +1063,10 @@ Generated by AI-Powered Educational Content Generator
                 name="difficulty"
                 value={form.difficulty}
                 onChange={onChange}
-                className={`w-full px-4 py-4 border-2 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-500/20 focus:border-green-500 text-lg transition-all ${
-                  currentTheme === 'dark'
+                className={`w-full px-4 py-4 border-2 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-500/20 focus:border-green-500 text-lg transition-all ${currentTheme === 'dark'
                     ? 'border-gray-600 bg-gray-700 text-gray-100'
                     : 'border-gray-200 bg-white text-gray-900'
-                }`}
+                  }`}
               >
                 <option value="">🤖 Auto-Predict (Recommended)</option>
                 <option value="beginner">🟢 Beginner Friendly</option>
@@ -1111,22 +1078,19 @@ Generated by AI-Powered Educational Content Generator
             <div className="flex items-center justify-center">
               <div className="text-center">
                 <div className="text-3xl mb-2">🎯</div>
-                <div className={`text-sm font-medium transition-colors duration-300 ${
-                  currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                }`}>18 Questions</div>
-                <div className={`text-xs transition-colors duration-300 ${
-                  currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-                }`}>Comprehensive Assessment</div>
+                <div className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'
+                  }`}>18 Questions</div>
+                <div className={`text-xs transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                  }`}>Comprehensive Assessment</div>
               </div>
             </div>
           </div>
 
           {error && (
-            <div className={`mt-8 p-6 border-2 rounded-xl flex items-start transition-colors duration-300 ${
-              currentTheme === 'dark'
+            <div className={`mt-8 p-6 border-2 rounded-xl flex items-start transition-colors duration-300 ${currentTheme === 'dark'
                 ? 'bg-red-900/20 border-red-700 text-red-300'
                 : 'bg-red-50 border-red-200 text-red-700'
-            }`}>
+              }`}>
               <XCircle className="mr-3 text-red-500 mt-0.5 shrink-0" size={20} />
               <div>
                 <p className="font-semibold text-lg">Generation Failed</p>
@@ -1161,11 +1125,10 @@ Generated by AI-Powered Educational Content Generator
         {content && (
           <div className="space-y-8">
             {/* ✅ FIXED: Enhanced Header with Simplified Stats */}
-            <div className={`rounded-3xl border shadow-xl backdrop-blur-sm overflow-hidden transition-colors duration-300 ${
-              currentTheme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-            }`}>
+            <div className={`rounded-3xl border shadow-xl backdrop-blur-sm overflow-hidden transition-colors duration-300 ${currentTheme === 'dark' ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+              }`}>
               <div className="h-2 bg-gradient-to-r from-indigo-400 to-purple-500"></div>
-              
+
               <div className="p-8">
                 <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between mb-8">
                   <div className="mb-6 xl:mb-0">
@@ -1174,56 +1137,48 @@ Generated by AI-Powered Educational Content Generator
                         <BookOpen className="w-6 h-6 text-white" />
                       </div>
                       <div>
-                        <h2 className={`text-3xl font-bold transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-                        }`}>
+                        <h2 className={`text-3xl font-bold transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+                          }`}>
                           {content.content?.topic}
                         </h2>
-                        <p className={`mt-1 transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                        }`}>AI-Generated Learning Content</p>
+                        <p className={`mt-1 transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                          }`}>AI-Generated Learning Content</p>
                       </div>
                     </div>
-                    
+
                     {/* ✅ SIMPLIFIED: Only AI Generated + Word Count */}
                     <div className="flex flex-wrap gap-3">
-                      <div className={`flex items-center px-4 py-2 border rounded-full transition-colors duration-300 ${
-                        currentTheme === 'dark'
+                      <div className={`flex items-center px-4 py-2 border rounded-full transition-colors duration-300 ${currentTheme === 'dark'
                           ? 'bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-green-700'
                           : 'bg-gradient-to-r from-green-100 to-emerald-100 border-green-200'
-                      }`}>
+                        }`}>
                         <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
-                        <span className={`text-sm font-medium transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-green-300' : 'text-green-800'
-                        }`}>AI Generated</span>
+                        <span className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-green-300' : 'text-green-800'
+                          }`}>AI Generated</span>
                       </div>
-                      
+
                       {content.content?.word_count && (
-                        <div className={`flex items-center px-4 py-2 border rounded-full transition-colors duration-300 ${
-                          currentTheme === 'dark'
+                        <div className={`flex items-center px-4 py-2 border rounded-full transition-colors duration-300 ${currentTheme === 'dark'
                             ? 'bg-gradient-to-r from-blue-900/30 to-indigo-900/30 border-blue-700'
                             : 'bg-gradient-to-r from-blue-100 to-indigo-100 border-blue-200'
-                        }`}>
-                          <BarChart3 className="w-4 h-4 text-blue-600 mr-2" />
-                          <span className={`text-sm font-medium transition-colors duration-300 ${
-                            currentTheme === 'dark' ? 'text-blue-300' : 'text-blue-800'
                           }`}>
+                          <BarChart3 className="w-4 h-4 text-blue-600 mr-2" />
+                          <span className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-blue-300' : 'text-blue-800'
+                            }`}>
                             {content.content.word_count} words
                           </span>
                         </div>
                       )}
-                      
+
                       {/* Assessment Questions Count */}
                       {content.content?.quiz_questions?.length > 0 && (
-                        <div className={`flex items-center px-4 py-2 border rounded-full transition-colors duration-300 ${
-                          currentTheme === 'dark'
+                        <div className={`flex items-center px-4 py-2 border rounded-full transition-colors duration-300 ${currentTheme === 'dark'
                             ? 'bg-gradient-to-r from-red-900/30 to-pink-900/30 border-red-700'
                             : 'bg-gradient-to-r from-red-100 to-pink-100 border-red-200'
-                        }`}>
-                          <Award className="w-4 h-4 text-red-600 mr-2" />
-                          <span className={`text-sm font-medium transition-colors duration-300 ${
-                            currentTheme === 'dark' ? 'text-red-300' : 'text-red-800'
                           }`}>
+                          <Award className="w-4 h-4 text-red-600 mr-2" />
+                          <span className={`text-sm font-medium transition-colors duration-300 ${currentTheme === 'dark' ? 'text-red-300' : 'text-red-800'
+                            }`}>
                             {content.content.quiz_questions.length} Assessment Questions
                           </span>
                         </div>
@@ -1234,33 +1189,30 @@ Generated by AI-Powered Educational Content Generator
                   <div className="flex flex-wrap gap-3">
                     <button
                       onClick={copyAllContent}
-                      className={`inline-flex items-center px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg ${
-                        currentTheme === 'dark'
+                      className={`inline-flex items-center px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg ${currentTheme === 'dark'
                           ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
+                        }`}
                     >
                       <Copy className="mr-2" size={18} />
                       Copy All
                     </button>
                     <button
                       onClick={downloadContent}
-                      className={`inline-flex items-center px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg ${
-                        currentTheme === 'dark'
+                      className={`inline-flex items-center px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg ${currentTheme === 'dark'
                           ? 'bg-green-900/30 text-green-300 hover:bg-green-800/40'
                           : 'bg-green-100 text-green-700 hover:bg-green-200'
-                      }`}
+                        }`}
                     >
                       <Download className="mr-2" size={18} />
                       Download
                     </button>
                     <button
                       onClick={() => generateContent()}
-                      className={`inline-flex items-center px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg ${
-                        currentTheme === 'dark'
+                      className={`inline-flex items-center px-6 py-3 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg ${currentTheme === 'dark'
                           ? 'bg-blue-900/30 text-blue-300 hover:bg-blue-800/40'
                           : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
-                      }`}
+                        }`}
                     >
                       <RefreshCw className="mr-2" size={18} />
                       Regenerate
@@ -1283,32 +1235,29 @@ Generated by AI-Powered Educational Content Generator
                 </div>
 
                 {/* Enhanced Content Display with Theme */}
-                <div className={`rounded-2xl p-8 min-h-[500px] border transition-colors duration-300 ${
-                  currentTheme === 'dark'
+                <div className={`rounded-2xl p-8 min-h-[500px] border transition-colors duration-300 ${currentTheme === 'dark'
                     ? 'bg-gradient-to-br from-gray-700 to-gray-600 border-gray-600'
                     : 'bg-gradient-to-br from-gray-50 to-blue-50 border-gray-100'
-                }`}>
+                  }`}>
                   {activeTab === 'explanation' && (
                     <div>
                       <div className="flex items-center mb-6">
                         <BookOpen className="w-6 h-6 text-blue-600 mr-3" />
-                        <h3 className={`text-2xl font-bold transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
-                        }`}>Comprehensive Explanation</h3>
+                        <h3 className={`text-2xl font-bold transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
+                          }`}>Comprehensive Explanation</h3>
                       </div>
-                      
+
                       {content?.content?.explanation ? (
-                        <ContentBlock 
+                        <ContentBlock
                           content={content.content.explanation}
                           title="Detailed Explanation"
                           type="text"
                         />
                       ) : (
-                        <div className={`p-8 text-center rounded-lg border-2 border-dashed ${
-                          currentTheme === 'dark'
+                        <div className={`p-8 text-center rounded-lg border-2 border-dashed ${currentTheme === 'dark'
                             ? 'border-gray-600 text-gray-400'
                             : 'border-gray-300 text-gray-500'
-                        }`}>
+                          }`}>
                           <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
                           <h4 className="text-lg font-semibold mb-2">No Explanation Available</h4>
                           <p>Please try regenerating the content.</p>
@@ -1327,11 +1276,10 @@ Generated by AI-Powered Educational Content Generator
                     <div>
                       <div className="flex items-center mb-6">
                         <Code2 className="w-6 h-6 text-purple-600 mr-3" />
-                        <h3 className={`text-2xl font-bold transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
-                        }`}>Practical Examples</h3>
+                        <h3 className={`text-2xl font-bold transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
+                          }`}>Practical Examples</h3>
                       </div>
-                      
+
                       {content?.content?.example ? (
                         <ContentBlock
                           content={content.content.example}
@@ -1340,11 +1288,10 @@ Generated by AI-Powered Educational Content Generator
                           type={detectContentLanguage(content.content.example) !== 'text' ? 'code' : 'text'}
                         />
                       ) : (
-                        <div className={`p-8 text-center rounded-lg border-2 border-dashed ${
-                          currentTheme === 'dark'
+                        <div className={`p-8 text-center rounded-lg border-2 border-dashed ${currentTheme === 'dark'
                             ? 'border-gray-600 text-gray-400'
                             : 'border-gray-300 text-gray-500'
-                        }`}>
+                          }`}>
                           <Code2 className="w-12 h-12 mx-auto mb-4 opacity-50" />
                           <h4 className="text-lg font-semibold mb-2">No Examples Available</h4>
                           <p>Examples were not generated for this topic.</p>
@@ -1357,23 +1304,21 @@ Generated by AI-Powered Educational Content Generator
                     <div>
                       <div className="flex items-center mb-6">
                         <Brain className="w-6 h-6 text-green-600 mr-3" />
-                        <h3 className={`text-2xl font-bold transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
-                        }`}>Practice Exercises</h3>
+                        <h3 className={`text-2xl font-bold transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
+                          }`}>Practice Exercises</h3>
                       </div>
-                      
+
                       {content?.content?.exercise ? (
-                        <ContentBlock 
+                        <ContentBlock
                           content={content.content.exercise}
                           title="Hands-on Exercises"
                           type="text"
                         />
                       ) : (
-                        <div className={`p-8 text-center rounded-lg border-2 border-dashed ${
-                          currentTheme === 'dark'
+                        <div className={`p-8 text-center rounded-lg border-2 border-dashed ${currentTheme === 'dark'
                             ? 'border-gray-600 text-gray-400'
                             : 'border-gray-300 text-gray-500'
-                        }`}>
+                          }`}>
                           <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
                           <h4 className="text-lg font-semibold mb-2">No Exercises Available</h4>
                           <p>Practice exercises were not generated for this topic.</p>
@@ -1387,31 +1332,28 @@ Generated by AI-Powered Educational Content Generator
                       <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center">
                           <Target className="w-6 h-6 text-red-600 mr-3" />
-                          <h3 className={`text-2xl font-bold transition-colors duration-300 ${
-                            currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
-                          }`}>Comprehensive Assessment</h3>
+                          <h3 className={`text-2xl font-bold transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
+                            }`}>Comprehensive Assessment</h3>
                         </div>
-                        <div className={`text-sm transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                        }`}>
+                        <div className={`text-sm transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                          }`}>
                           {content.content.quiz_questions.length} Questions • Skill Level Prediction
                         </div>
                       </div>
 
                       {quizScore && (
-                        <div className={`mb-8 p-6 rounded-2xl font-medium text-center shadow-lg transition-colors duration-300 ${
-                          quizScore.percentage >= 80 
+                        <div className={`mb-8 p-6 rounded-2xl font-medium text-center shadow-lg transition-colors duration-300 ${quizScore.percentage >= 80
                             ? currentTheme === 'dark'
                               ? 'bg-gradient-to-r from-green-900/30 to-emerald-900/30 text-green-300 border-2 border-green-700'
                               : 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-2 border-green-200'
-                            : quizScore.percentage >= 60 
+                            : quizScore.percentage >= 60
                               ? currentTheme === 'dark'
                                 ? 'bg-gradient-to-r from-yellow-900/30 to-orange-900/30 text-yellow-300 border-2 border-yellow-700'
                                 : 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-2 border-yellow-200'
                               : currentTheme === 'dark'
                                 ? 'bg-gradient-to-r from-red-900/30 to-pink-900/30 text-red-300 border-2 border-red-700'
                                 : 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border-2 border-red-200'
-                        }`}>
+                          }`}>
                           <div className="text-4xl mb-3">
                             {quizScore.percentage >= 80 ? '🏆' : quizScore.percentage >= 60 ? '👍' : '💪'}
                           </div>
@@ -1422,8 +1364,8 @@ Generated by AI-Powered Educational Content Generator
                             {quizScore.percentage >= 80
                               ? 'Outstanding! You have excellent mastery of this topic!'
                               : quizScore.percentage >= 60
-                              ? 'Great job! You have good understanding. Keep practicing!'
-                              : 'Good effort! Review the content and strengthen your knowledge.'}
+                                ? 'Great job! You have good understanding. Keep practicing!'
+                                : 'Good effort! Review the content and strengthen your knowledge.'}
                           </p>
                         </div>
                       )}
@@ -1457,23 +1399,21 @@ Generated by AI-Powered Educational Content Generator
                     <div>
                       <div className="flex items-center mb-6">
                         <Lightbulb className="w-6 h-6 text-yellow-600 mr-3" />
-                        <h3 className={`text-2xl font-bold transition-colors duration-300 ${
-                          currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
-                        }`}>Personalized Learning Tips</h3>
+                        <h3 className={`text-2xl font-bold transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-800'
+                          }`}>Personalized Learning Tips</h3>
                       </div>
-                      
+
                       {content?.content?.learning_tip ? (
-                        <ContentBlock 
+                        <ContentBlock
                           content={content.content.learning_tip}
                           title="Study Recommendations"
                           type="text"
                         />
                       ) : (
-                        <div className={`p-8 text-center rounded-lg border-2 border-dashed ${
-                          currentTheme === 'dark'
+                        <div className={`p-8 text-center rounded-lg border-2 border-dashed ${currentTheme === 'dark'
                             ? 'border-gray-600 text-gray-400'
                             : 'border-gray-300 text-gray-500'
-                        }`}>
+                          }`}>
                           <Lightbulb className="w-12 h-12 mx-auto mb-4 opacity-50" />
                           <h4 className="text-lg font-semibold mb-2">No Learning Tips Available</h4>
                           <p>Learning recommendations were not generated for this topic.</p>
@@ -1486,73 +1426,62 @@ Generated by AI-Powered Educational Content Generator
             </div>
 
             {/* Next Steps Section with Theme */}
-            <div className={`rounded-3xl border p-8 shadow-xl backdrop-blur-sm transition-colors duration-300 ${
-              currentTheme === 'dark'
+            <div className={`rounded-3xl border p-8 shadow-xl backdrop-blur-sm transition-colors duration-300 ${currentTheme === 'dark'
                 ? 'bg-gray-800 border-gray-700'
                 : 'bg-white border-gray-200'
-            }`}>
-              <h3 className={`text-3xl font-bold mb-8 text-center flex items-center justify-center transition-colors duration-300 ${
-                currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
               }`}>
+              <h3 className={`text-3xl font-bold mb-8 text-center flex items-center justify-center transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+                }`}>
                 <TrendingUp className="w-8 h-8 text-blue-600 mr-3" />
                 Continue Your Learning Journey
               </h3>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 <Link
                   to="/quiz/interface"
-                  className={`group flex flex-col items-center p-8 border-2 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
-                    currentTheme === 'dark'
+                  className={`group flex flex-col items-center p-8 border-2 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${currentTheme === 'dark'
                       ? 'border-gray-600 hover:border-blue-500 hover:bg-blue-900/20'
                       : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
-                  }`}
+                    }`}
                 >
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <PlayCircle className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className={`font-bold text-xl mb-2 transition-colors duration-300 ${
-                    currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-                  }`}>Practice More</h4>
-                  <p className={`text-center transition-colors duration-300 ${
-                    currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>Take additional comprehensive quizzes on this topic</p>
+                  <h4 className={`font-bold text-xl mb-2 transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+                    }`}>Practice More</h4>
+                  <p className={`text-center transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>Take additional comprehensive quizzes on this topic</p>
                 </Link>
 
                 <Link
                   to="/courses"
-                  className={`group flex flex-col items-center p-8 border-2 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
-                    currentTheme === 'dark'
+                  className={`group flex flex-col items-center p-8 border-2 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${currentTheme === 'dark'
                       ? 'border-gray-600 hover:border-green-500 hover:bg-green-900/20'
                       : 'border-gray-200 hover:border-green-300 hover:bg-green-50'
-                  }`}
+                    }`}
                 >
                   <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <BookMarked className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className={`font-bold text-xl mb-2 transition-colors duration-300 ${
-                    currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-                  }`}>Explore Courses</h4>
-                  <p className={`text-center transition-colors duration-300 ${
-                    currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>Find structured learning paths and comprehensive courses</p>
+                  <h4 className={`font-bold text-xl mb-2 transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+                    }`}>Explore Courses</h4>
+                  <p className={`text-center transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>Find structured learning paths and comprehensive courses</p>
                 </Link>
 
                 <Link
                   to="/analytics"
-                  className={`group flex flex-col items-center p-8 border-2 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
-                    currentTheme === 'dark'
+                  className={`group flex flex-col items-center p-8 border-2 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${currentTheme === 'dark'
                       ? 'border-gray-600 hover:border-purple-500 hover:bg-purple-900/20'
                       : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50'
-                  }`}
+                    }`}
                 >
                   <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <BarChart3 className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className={`font-bold text-xl mb-2 transition-colors duration-300 ${
-                    currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
-                  }`}>View Progress</h4>
-                  <p className={`text-center transition-colors duration-300 ${
-                    currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>Track your learning analytics and skill development</p>
+                  <h4 className={`font-bold text-xl mb-2 transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-100' : 'text-gray-900'
+                    }`}>View Progress</h4>
+                  <p className={`text-center transition-colors duration-300 ${currentTheme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                    }`}>Track your learning analytics and skill development</p>
                 </Link>
               </div>
             </div>

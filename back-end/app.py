@@ -924,28 +924,38 @@ def validate_quiz_params(body):
 @app.post("/api/auth/signup")
 def signup():
     body = request.get_json(force=True)
-    email = body.get("email","").lower().strip()
-    username = body.get("username","").strip()
-    password = body.get("password","")
+    name = body.get("username", "").strip()
+    email = body.get("email", "").lower().strip()
+    password = body.get("password", "")
     
-    if not email or not password:
-        return {"error": "Email and password required"}, 400
+    if not name or not email or not password:
+        return {"error": "All fields are required"}, 400
     
     if users_col.find_one({"email": email}):
         return {"error": "Email already registered"}, 409
     
-    doc = {
+    user_doc = {
+        "name": name,
         "email": email,
-        "username": username or email.split("@")[0],
         "password_hash": generate_password_hash(password),
         "role": "student",
         "created_at": datetime.now(timezone.utc),
     }
     
-    res = users_col.insert_one(doc)
-    token = create_token(res.inserted_id, email, doc["role"])
+    res = users_col.insert_one(user_doc)
+    user_id = str(res.inserted_id)
     
-    return {"token": token, "user": {"email": email, "username": doc["username"], "role": doc["role"]}}
+    token = create_token(user_id, email, user_doc["role"])
+    
+    return {
+        "token": token,
+        "user": {
+            "id": user_id,
+            "name": name,
+            "email": email,
+            "role": user_doc["role"]
+        }
+    }, 201
 
 @app.post("/api/auth/login")
 def login():
@@ -1415,7 +1425,7 @@ def generate_placement_quiz():
     question_count = int(body.get("questionCount", 8))
     
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         interests_text = ", ".join(interests) if interests else "general topics"
         
         prompt = f"""Create a placement assessment quiz for {department} field with focus on {interests_text}.
@@ -1651,46 +1661,34 @@ def quiz_generate():
 
     questions = int(body.get("questions", 5))
     choices = int(body.get("choices", 4))
-    difficulty = body.get("difficulty", "beginner")
     language = body.get("language", "English")
-    
-    # Get user's profile for personalization
+
+    # ✅ ALWAYS use profile skill level (ignore request difficulty)
     user_id = request.user["uid"]
     try:
         profile = profiles_col.find_one({"studentId": user_id})
         if profile:
-            # Read from the updated profile structure
-            skill_level = profile.get('profile', {}).get('skillLevel', 'beginner')
-            print(f"🎯 Using profile skill level: {skill_level}")
+            difficulty = profile.get('profile', {}).get('skillLevel', 'beginner')
+            print(f"✅ Using profile skill level: {difficulty}")
         else:
-            skill_level = 'beginner'
-            print(f"⚠️ No profile found, defaulting to: {skill_level}")
+            difficulty = 'beginner'
+            print(f"⚠️ No profile found, using: beginner")
     except Exception as e:
-        print(f"⚠️ Could not get user profile: {e}")
-        skill_level = 'beginner'
-    
-    # Use skill_level in difficulty if not specified
-    if not body.get("difficulty"):
-        difficulty = skill_level  # ✅ Use profile skill level as default
-    else:
-        difficulty = body.get("difficulty", skill_level)
+        print(f"⚠️ Profile error: {e}")
+        difficulty = 'beginner'
     
     # Generate with AI
     try:
         print("🔄 Starting AI generation...")
         
-        # ✅ FIXED: Remove invalid parameter and use correct configuration
-        generation_config = {
-            "temperature": 0.7,
-            "top_p": 0.8,
-            "top_k": 40,
-            "max_output_tokens": 2048,
+        generationconfig = {
+        'temperature': 0.7,
+        'top_p': 0.8,
+        'top_k': 40,
+        'max_output_tokens': 2048,
         }
-        
-        model = genai.GenerativeModel(
-            'gemini-1.5-flash',
-            generation_config=generation_config
-        )
+        model = genai.GenerativeModel('gemini-2.5-flash', generation_config=generationconfig) 
+
         print(f"📝 Generating {questions} {difficulty} questions on: {topic}")
         
         # Enhanced prompt with JSON formatting instructions
@@ -1990,31 +1988,39 @@ def quiz_submit():
         })
 
     score = {"total": total, "correct": correct}
+    
+    # ✅ FIX: Calculate percentage safely
+    percentage = round((correct / total) * 100, 2) if total > 0 else 0
+    
+    # ✅ FIX: Use consistent datetime format (ISO string)
+    submission_time = datetime.now(timezone.utc)
 
     attempt_doc = {
         "user_id": request.user["uid"],
         "quiz_id": str(qid),
-        "submitted_at": datetime.now(timezone.utc),
+        "submitted_at": submission_time,  # Keep as datetime for MongoDB
+        "submittedAt": submission_time.isoformat(),  # ✅ ADD: ISO string for frontend
         "answers": answers,
         "score": score,
+        "percentage": percentage,  # ✅ ADD: Percentage field
         "detail": detail,
         "topic": quiz_doc.get("topic", "Unknown"),
-        "difficulty": quiz_doc.get("difficulty", "beginner")
+        "category": quiz_doc.get("category", "General"),  # ✅ ADD: Missing category
+        "difficulty": quiz_doc.get("difficulty", "beginner"),
+        "type": quiz_doc.get("type", "practice")  # ✅ ADD: Quiz type
     }
     
     res = attempts_col.insert_one(attempt_doc)
 
     # Trigger ML prediction update in background
     try:
-        # Get updated attempts and trigger new prediction
         user_id = request.user["uid"]
         all_attempts = list(attempts_col.find({"user_id": user_id}))
         profile = profiles_col.find_one({"studentId": user_id})
         
-        if len(all_attempts) >= 3:  # Only predict after sufficient data
+        if len(all_attempts) >= 3:
             prediction_result = ml_predictor.predict_skill_level(all_attempts, profile)
             
-            # Update profile with new prediction
             profiles_col.find_one_and_update(
                 {"studentId": user_id},
                 {
@@ -2036,6 +2042,7 @@ def quiz_submit():
     return {
         "attemptId": str(res.inserted_id),
         "score": score,
+        "percentage": percentage,  
         "detail": detail
     }
 
@@ -2137,12 +2144,12 @@ def generate_nlp_enhanced_content():
 
         topic = body.get('topic', '').strip()
         content_type = body.get('contentType', 'explanation')
-        difficulty_override = body.get('difficulty', '')  # Optional manual override
+        difficulty_override = body.get('difficulty', '')
         
         if not topic:
             return {"error": "Topic is required"}, 400
         
-        # Get enhanced profile data and AUTOMATICALLY PREDICT skill level
+        # Get profile and predict skill level
         profile = profiles_col.find_one({"studentId": user_id})
         
         if not profile:
@@ -2157,18 +2164,15 @@ def generate_nlp_enhanced_content():
             learning_style = cognitive_profile.get('learningStyle', 'visual')
             department = demographics.get('department', 'general')
             
-            # 🤖 AUTO-PREDICT SKILL LEVEL using your existing profile structure
             predicted_skill_level, confidence = predict_student_skill_level_from_profile(profile, topic)
         
-        # Use predicted level unless manually overridden
         effective_difficulty = difficulty_override or predicted_skill_level
         
         logger.info(f"🤖 PREDICTED: {predicted_skill_level} (confidence: {confidence:.2f}) | USING: {effective_difficulty} | {topic} | {learning_style} | {department}")
         
-        # ✅ STREAMLINED: Use nlp_processor for EVERYTHING
+        # Generate content
         logger.info("🚀 Generating content and quiz with nlp_processor...")
         
-        # Generate content using nlp_processor
         content_result = nlp_processor.generate_educational_content(
             topic=topic,
             difficulty_level=effective_difficulty,
@@ -2181,16 +2185,15 @@ def generate_nlp_enhanced_content():
             logger.error("Content generation failed")
             return {"error": "Failed to generate content"}, 500
         
-        # Generate quiz using nlp_processor (already working!)
+        # Generate quiz
         logger.info("❓ Generating comprehensive quiz questions...")
         quiz_questions = nlp_processor.generate_smart_quiz_questions(
             content_result.get('enhanced_content', ''), 
             num_questions=18,
             difficulty_level=effective_difficulty,
-            topic=topic  # This makes it topic-aware
+            topic=topic
         )
         
-        # ✅ Create comprehensive response
         result = {
             "status": "success",
             "content": {
@@ -2206,11 +2209,28 @@ def generate_nlp_enhanced_content():
                     "auto_predicted": not difficulty_override
                 },
                 
-                # Content sections from nlp_processor
-                "explanation": content_result.get('explanation', ''),
-                "example": content_result.get('examples', ''),
-                "exercise": content_result.get('exercises', ''),
-                "learning_tip": content_result.get('learning_tips', ''),
+                # ✅ FIXED: Content sections with fallback to enhanced_content
+                "explanation": (
+                    content_result.get('explanation', '').strip() or 
+                    content_result.get('enhanced_content', '').strip() or 
+                    content_result.get('raw_content', '').strip() or
+                    'No content available'
+                ),
+                "example": (
+                    content_result.get('examples', '').strip() or 
+                    content_result.get('example', '').strip() or
+                    ''
+                ),
+                "exercise": (
+                    content_result.get('exercises', '').strip() or 
+                    content_result.get('exercise', '').strip() or
+                    ''
+                ),
+                "learning_tip": (
+                    content_result.get('learning_tips', '').strip() or 
+                    content_result.get('learning_tip', '').strip() or
+                    ''
+                ),
                 "quiz_questions": quiz_questions,
                 
                 # Analytics
@@ -2231,9 +2251,16 @@ def generate_nlp_enhanced_content():
                     "nlp_enhanced": True
                 },
                 
-                # Metadata
-                "word_count": len(content_result.get('explanation', '').split()),
-                "estimated_reading_time": max(1, len(content_result.get('explanation', '').split()) // 200),
+                # Metadata (updated to count actual content)
+                "word_count": len(
+                    (content_result.get('explanation', '') or 
+                    content_result.get('enhanced_content', '')).split()
+                ),
+                "estimated_reading_time": max(
+                    1, 
+                    len((content_result.get('explanation', '') or 
+                        content_result.get('enhanced_content', '')).split()) // 200
+                ),
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "ai_generated": True,
                 "nlp_enhanced": True,
@@ -2241,9 +2268,14 @@ def generate_nlp_enhanced_content():
                 "spacy_model": "en_core_web_md"
             }
         }
-        
-        # ✅ Update profile with prediction data
-        update_profile_with_prediction_insights(user_id, predicted_skill_level, confidence, {}, topic)
+                
+        update_profile_with_prediction_insights(
+            user_id, 
+            predicted_skill_level, 
+            confidence, 
+            content_result.get('content_analysis', {}),  # ✅ FIXED
+            topic
+        )
         
         logger.info(f"✅ Generated content: {predicted_skill_level}→{effective_difficulty} | {len(quiz_questions)} questions | confidence: {confidence:.2f}")
         return result, 200
@@ -2251,27 +2283,6 @@ def generate_nlp_enhanced_content():
     except Exception as e:
         logger.error(f"Enhanced content generation error: {str(e)}")
         return {"error": "Failed to generate content. Please try again."}, 500
-
-def update_profile_with_prediction_insights(user_id, predicted_level, confidence, nlp_analysis, topic):
-    """Update user profile with prediction and content interaction data"""
-    try:
-        update_data = {
-            "lastPredictedLevel": predicted_level,
-            "predictionConfidence": confidence,
-            "lastContentTopic": topic,
-            "contentInteractionAt": datetime.now(timezone.utc),
-        }
-        
-        profiles_col.update_one(
-            {"studentId": user_id},
-            {"$set": update_data},
-            upsert=True
-        )
-        
-        logger.info(f"✅ Profile updated with prediction data: {predicted_level} (confidence: {confidence:.2f})")
-        
-    except Exception as e:
-        logger.warning(f"Failed to update profile with prediction data: {e}")
 
 def predict_student_skill_level_from_profile(profile, topic):
     """Predict student's skill level using your existing profile structure"""
@@ -2452,18 +2463,44 @@ def get_prediction_factors_from_profile(profile):
     
     return factors[:6]  # Return top 6 factors
 
+# ✅ REPLACE Function #2 with this SAFE version
 def update_profile_with_prediction_insights(user_id, predicted_level, confidence, nlp_analysis, topic):
     """Update user profile with prediction and content interaction data"""
     try:
+        # Safe extraction with defaults
+        overall_score = 0.0
+        concept_complexity = 0.5
+        readability_score = 0.5
+        
+        # Safely extract NLP analysis data
+        if nlp_analysis and isinstance(nlp_analysis, dict):
+            # Get quality score
+            quality = nlp_analysis.get('quality', {})
+            if isinstance(quality, dict):
+                overall_score = quality.get('overall_quality', 0.0)
+            
+            # Get educational metrics
+            educational = nlp_analysis.get('educational', {})
+            if isinstance(educational, dict):
+                concept_complexity = educational.get('concept_complexity', 0.5)
+            
+            # Get readability
+            linguistic = nlp_analysis.get('linguistic', {})
+            if isinstance(linguistic, dict):
+                readability = linguistic.get('readability', {})
+                if isinstance(readability, dict):
+                    readability_score = readability.get('flesch_reading_ease', 0.5)
+        
         update_data = {
             "lastPredictedLevel": predicted_level,
             "predictionConfidence": confidence,
             "lastContentTopic": topic,
             "contentInteractionAt": datetime.now(timezone.utc),
             "predictionValidation": {
-                "contentQuality": nlp_analysis['overall_score'],
-                "conceptComplexity": nlp_analysis['educational']['concept_complexity'],
-                "readabilityScore": nlp_analysis['linguistic']['readability']['flesch_reading_ease']
+                "contentQuality": overall_score,
+                "conceptComplexity": concept_complexity,
+                "readabilityScore": readability_score,
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
         }
         
@@ -2476,8 +2513,7 @@ def update_profile_with_prediction_insights(user_id, predicted_level, confidence
         logger.info(f"✅ Profile updated with prediction data: {predicted_level} (confidence: {confidence:.2f})")
         
     except Exception as e:
-        logger.warning(f"Failed to update profile with prediction data: {e}")
-                
+        logger.warning(f"Failed to update profile with prediction data: {e}")                
 
 def calculate_avg_complexity(questions):
     """Calculate average complexity of quiz questions"""
@@ -2774,45 +2810,69 @@ def my_analytics():
         attempts = list(attempts_col.find({"user_id": user_id}))
         enrolled_courses = list(courses_col.find({"enrolledStudents": user_id}))
         
-        # === CORE PERFORMANCE METRICS === [web:72][web:74]
+        # === CORE PERFORMANCE METRICS ===
         total_attempts = len(attempts)
         total_questions = sum(attempt.get("score", {}).get("total", 0) for attempt in attempts)
         total_correct = sum(attempt.get("score", {}).get("correct", 0) for attempt in attempts)
         overall_percentage = round((total_correct / total_questions) * 100, 2) if total_questions > 0 else 0
         
-        # === LEARNING PROGRESSION ANALYTICS === [web:76][web:79]
-        performance_trend = []
-        skill_progression = []
-        recent_attempts = sorted(attempts, key=lambda x: x.get("submitted_at", datetime.now()), reverse=True)[:10]
+        # === RECENT ATTEMPTS ===
+        recent_attempts = sorted(
+            attempts, 
+            key=lambda x: x.get("submitted_at") or datetime.min.replace(tzinfo=timezone.utc), 
+            reverse=True
+        )[:10]
         
+        # === PERFORMANCE TREND ===
+        performance_trend = []
         for i, attempt in enumerate(reversed(recent_attempts)):
             score_data = attempt.get("score", {})
-            percentage = round((score_data.get("correct", 0) / max(score_data.get("total", 1), 1)) * 100, 2)
+            total = score_data.get("total", 1)
+            correct = score_data.get("correct", 0)
+            percentage = round((correct / total) * 100, 2) if total > 0 else 0
+            
+            # ✅ FIX: Safe date formatting
+            attempt_date = attempt.get("submitted_at")
+            if hasattr(attempt_date, "strftime"):
+                date_str = attempt_date.strftime("%Y-%m-%d")
+            elif isinstance(attempt_date, str):
+                date_str = attempt_date[:10]
+            else:
+                date_str = datetime.now().strftime("%Y-%m-%d")
             
             performance_trend.append({
                 "attempt": i + 1,
                 "score": percentage,
                 "topic": attempt.get("topic", "Unknown"),
                 "difficulty": attempt.get("difficulty", "beginner"),
-                "date": attempt.get("submitted_at", datetime.now()).strftime("%Y-%m-%d") if hasattr(attempt.get("submitted_at"), "strftime") else str(attempt.get("submitted_at", ""))[:10]
+                "date": date_str
             })
         
-        # === TOPIC-WISE ANALYTICS === [web:79][web:74]
+        # === TOPIC-WISE ANALYTICS ===
         topic_performance = {}
         difficulty_performance = {"beginner": [], "intermediate": [], "pro": []}
         
         for attempt in attempts:
             topic = attempt.get("topic", "General")
             difficulty = attempt.get("difficulty", "beginner")
-            score_data = attempt.get("score", {})
-            percentage = (score_data.get("correct", 0) / max(score_data.get("total", 1), 1)) * 100
+            
+            # ✅ FIX: Use stored percentage or calculate
+            percentage = attempt.get("percentage")
+            if percentage is None:
+                score_data = attempt.get("score", {})
+                total = score_data.get("total", 1)
+                correct = score_data.get("correct", 0)
+                percentage = (correct / total) * 100 if total > 0 else 0
             
             # Topic analysis
             if topic not in topic_performance:
                 topic_performance[topic] = {"attempts": 0, "total_score": 0, "avg_score": 0}
             topic_performance[topic]["attempts"] += 1
             topic_performance[topic]["total_score"] += percentage
-            topic_performance[topic]["avg_score"] = round(topic_performance[topic]["total_score"] / topic_performance[topic]["attempts"], 2)
+            topic_performance[topic]["avg_score"] = round(
+                topic_performance[topic]["total_score"] / topic_performance[topic]["attempts"], 
+                2
+            )
             
             # Difficulty analysis
             if difficulty in difficulty_performance:
@@ -2830,7 +2890,7 @@ def my_analytics():
             else:
                 difficulty_analytics[diff] = {"avg_score": 0, "attempts": 0, "improvement": 0}
         
-        # === LEARNING PATTERNS & INSIGHTS === [web:77][web:84]
+        # === LEARNING PATTERNS & INSIGHTS ===
         current_skill_level = "beginner"
         learning_velocity = 0
         consistency_score = 0
@@ -2839,23 +2899,29 @@ def my_analytics():
             current_skill_level = profile.get("profile", {}).get("skillLevel", "beginner")
         
         if len(recent_attempts) >= 3:
-            # Learning velocity (improvement rate)
-            recent_scores = [att.get("score", {}).get("correct", 0) / max(att.get("score", {}).get("total", 1), 1) * 100 for att in recent_attempts[:5]]
+            recent_scores = []
+            for att in recent_attempts[:5]:
+                perc = att.get("percentage")
+                if perc is None:
+                    score = att.get("score", {})
+                    total = score.get("total", 1)
+                    correct = score.get("correct", 0)
+                    perc = (correct / total) * 100 if total > 0 else 0
+                recent_scores.append(perc)
+            
             if len(recent_scores) > 1:
                 learning_velocity = round((recent_scores[0] - recent_scores[-1]) / len(recent_scores), 2)
             
-            # Consistency score (lower variance = more consistent)
             if recent_scores:
                 mean_score = sum(recent_scores) / len(recent_scores)
                 variance = sum((score - mean_score) ** 2 for score in recent_scores) / len(recent_scores)
                 consistency_score = max(0, round(100 - variance, 2))
         
-        # === PERSONALIZED RECOMMENDATIONS === [web:77][web:80]
+        # === PERSONALIZED RECOMMENDATIONS ===
         recommendations = []
         weak_topics = sorted(topic_performance.items(), key=lambda x: x[1]["avg_score"])[:3]
         strong_topics = sorted(topic_performance.items(), key=lambda x: x[1]["avg_score"], reverse=True)[:3]
         
-        # Generate recommendations based on performance [web:74][web:77]
         if overall_percentage < 60:
             recommendations.append({
                 "type": "skill_building",
@@ -2883,7 +2949,7 @@ def my_analytics():
                 "priority": "medium"
             })
         
-        # === ACHIEVEMENT & MILESTONES === [web:72][web:74]
+        # === ACHIEVEMENTS & MILESTONES ===
         achievements = []
         if total_attempts >= 10:
             achievements.append({"badge": "Quiz Master", "description": "Completed 10+ quizzes"})
@@ -2892,17 +2958,19 @@ def my_analytics():
         if len(topic_performance) >= 5:
             achievements.append({"badge": "Explorer", "description": "Practiced 5+ different topics"})
         
-        # === LEARNING STREAKS & ENGAGEMENT === [web:74][web:76]
+        # === LEARNING STREAKS ===
         learning_streak = 0
         if attempts:
-            # Calculate learning streak (consecutive days with activity)
             attempt_dates = []
             for attempt in attempts:
-                if hasattr(attempt.get("submitted_at"), "date"):
-                    attempt_dates.append(attempt.get("submitted_at").date())
-                elif isinstance(attempt.get("submitted_at"), str):
+                submitted = attempt.get("submitted_at")
+                if hasattr(submitted, "date"):
+                    attempt_dates.append(submitted.date())
+                elif isinstance(submitted, str):
                     try:
-                        attempt_dates.append(datetime.fromisoformat(attempt.get("submitted_at").replace("Z", "+00:00")).date())
+                        attempt_dates.append(
+                            datetime.fromisoformat(submitted.replace("Z", "+00:00")).date()
+                        )
                     except:
                         pass
             
@@ -2916,20 +2984,29 @@ def my_analytics():
                     else:
                         break
         
-        # === COMPREHENSIVE RESPONSE === [web:72][web:74]
+        # ✅ FIX: Helper function for date formatting
+        def format_date(dt):
+            """Safely format datetime to ISO string"""
+            if dt is None:
+                return None
+            if hasattr(dt, "isoformat"):
+                return dt.isoformat()
+            if isinstance(dt, str):
+                return dt
+            return str(dt)
+        
+        # === COMPREHENSIVE RESPONSE ===
         return {
             "status": "success",
             "analytics": {
-                # Personal Info
                 "student": {
                     "id": user_id,
                     "email": student.get("email"),
                     "username": student.get("username", student.get("email", "").split("@")[0]),
-                    "memberSince": student.get("created_at").isoformat() + "Z" if student.get("created_at") else None,
+                    "memberSince": format_date(student.get("created_at")),
                     "currentSkillLevel": current_skill_level
                 },
                 
-                # Core Performance Metrics [web:72][web:74]
                 "performance": {
                     "totalAttempts": total_attempts,
                     "totalQuestions": total_questions,
@@ -2941,7 +3018,6 @@ def my_analytics():
                     "learningStreak": learning_streak
                 },
                 
-                # Visual Analytics Data [web:76][web:79] 
                 "charts": {
                     "performanceTrend": performance_trend,
                     "topicPerformance": [
@@ -2956,7 +3032,6 @@ def my_analytics():
                     ]
                 },
                 
-                # Learning Insights [web:77][web:80]
                 "insights": {
                     "strongestTopics": [{"topic": topic, "score": data["avg_score"]} for topic, data in strong_topics],
                     "weakestTopics": [{"topic": topic, "score": data["avg_score"]} for topic, data in weak_topics],
@@ -2965,7 +3040,6 @@ def my_analytics():
                     "nextMilestone": "Complete 5 more quizzes to unlock Advanced Analytics" if total_attempts < 15 else "Maintain your excellent progress!"
                 },
                 
-                # Course Analytics
                 "courses": {
                     "enrolled": len(enrolled_courses),
                     "courseList": [
@@ -2974,25 +3048,31 @@ def my_analytics():
                             "title": course.get("title"),
                             "instructor": course.get("instructorName"),
                             "difficulty": course.get("difficultyLevel", "intermediate"),
-                            "enrolledAt": course.get("updated_at").isoformat() + "Z" if course.get("updated_at") else None
+                            "enrolledAt": format_date(course.get("updated_at"))
                         } for course in enrolled_courses
                     ]
                 },
                 
-                # Recent Activity [web:74]
+                # ✅ FIXED: Recent Activity with proper date handling
                 "recentActivity": [
                     {
                         "attemptId": str(attempt.get("_id")),
                         "topic": attempt.get("topic", "Unknown"),
+                        "category": attempt.get("category", "General"),
                         "score": attempt.get("score", {}),
-                        "percentage": round((attempt.get("score", {}).get("correct", 0) / max(attempt.get("score", {}).get("total", 1), 1)) * 100, 2),
+                        "percentage": attempt.get("percentage") or round(
+                            (attempt.get("score", {}).get("correct", 0) / max(attempt.get("score", {}).get("total", 1), 1)) * 100, 
+                            2
+                        ),
                         "difficulty": attempt.get("difficulty", "beginner"),
-                        "submittedAt": attempt.get("submitted_at").isoformat() + "Z" if hasattr(attempt.get("submitted_at"), "isoformat") else str(attempt.get("submitted_at"))
+                        "submittedAt": (
+                            attempt.get("submittedAt") or 
+                            format_date(attempt.get("submitted_at"))
+                        )
                     } for attempt in recent_attempts[:5]
                 ],
                 
-                # Metadata
-                "lastUpdated": datetime.now().isoformat() + "Z",
+                "lastUpdated": datetime.now(timezone.utc).isoformat(),
                 "dataRange": f"Last {total_attempts} attempts" if total_attempts > 0 else "No quiz data available"
             }
         }, 200
@@ -3000,7 +3080,6 @@ def my_analytics():
     except Exception as e:
         logger.error(f"Analytics error: {str(e)}")
         return {"error": f"Failed to load analytics: {str(e)}"}, 500
-
 
 @app.get("/api/analytics/student/<student_id>")
 @auth_required
@@ -3315,6 +3394,373 @@ def create_user_by_admin():
     except Exception as e:
         logger.error(f"Admin create user error: {str(e)}")
         return {"error": "Failed to create user"}, 500
+    
+@app.get("/api/analytics/overview")
+@auth_required
+def get_platform_analytics():
+    """Admin dashboard - Platform-wide analytics overview"""
+    try:
+        user_role = request.user.get("role", "student")
+        
+        # Check if user is admin
+        if user_role != "admin":
+            return {"error": "Unauthorized. Admin access required."}, 403
+        
+        # Initialize response with safe defaults
+        response = {
+            "status": "success",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "platform": {},
+            "engagement": {},
+            "skillDistribution": {},
+            "mlFeatures": {},
+            "systemHealth": {},
+            "topStudents": [],
+            "popularTopics": []
+        }
+        
+        # ═══════════════════════════════════════════════════════
+        # 1. Platform Statistics (Safe counts)
+        # ═══════════════════════════════════════════════════════
+        
+        try:
+            total_users = users_col.count_documents({})
+            students_count = users_col.count_documents({"role": "student"})
+            teachers_count = users_col.count_documents({"role": "teacher"})
+            admins_count = users_col.count_documents({"role": "admin"})
+        except Exception as e:
+            logger.error(f"User count error: {str(e)}")
+            total_users = students_count = teachers_count = admins_count = 0
+        
+        try:
+            total_courses = courses_col.count_documents({})
+            active_courses = courses_col.count_documents({"status": "active"})
+        except Exception as e:
+            logger.error(f"Course count error: {str(e)}")
+            total_courses = active_courses = 0
+        
+        try:
+            total_quizzes = quizzes_col.count_documents({})
+        except Exception as e:
+            logger.error(f"Quiz count error: {str(e)}")
+            total_quizzes = 0
+        
+        try:
+            total_attempts = attempts_col.count_documents({})
+        except Exception as e:
+            logger.error(f"Attempts count error: {str(e)}")
+            total_attempts = 0
+        
+        try:
+            total_profiles = profiles_col.count_documents({})
+            complete_profiles = profiles_col.count_documents({
+                "demographics.name": {"$exists": True, "$ne": ""}
+            })
+        except Exception as e:
+            logger.error(f"Profile count error: {str(e)}")
+            total_profiles = complete_profiles = 0
+        
+        response["platform"] = {
+            "totalUsers": total_users,
+            "totalCourses": total_courses,
+            "totalQuizzes": total_quizzes,
+            "totalAttempts": total_attempts,
+            "totalProfiles": total_profiles,
+            "usersByRole": {
+                "students": students_count,
+                "teachers": teachers_count,
+                "admins": admins_count
+            },
+            "courseStats": {
+                "active": active_courses,
+                "total": total_courses
+            },
+            "profileStats": {
+                "complete": complete_profiles,
+                "incomplete": total_profiles - complete_profiles
+            }
+        }
+        
+        # ═══════════════════════════════════════════════════════
+        # 2. Engagement Metrics
+        # ═══════════════════════════════════════════════════════
+        
+        try:
+            active_users = len(attempts_col.distinct("userId"))
+        except Exception as e:
+            logger.error(f"Active users error: {str(e)}")
+            active_users = 0
+        
+        avg_quizzes_per_user = round(total_attempts / total_users, 2) if total_users > 0 else 0
+        
+        # Calculate platform average score
+        try:
+            all_attempts = list(attempts_col.find({}, {"score.percentage": 1, "_id": 0}).limit(1000))
+            if all_attempts:
+                total_score = sum(a.get("score", {}).get("percentage", 0) for a in all_attempts)
+                platform_avg_score = round(total_score / len(all_attempts), 2)
+            else:
+                platform_avg_score = 0
+        except Exception as e:
+            logger.error(f"Average score error: {str(e)}")
+            platform_avg_score = 0
+        
+        # Recent activity (last 7 days) - with flexible date field handling
+        try:
+            seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+            
+            # Try different date field names for attempts
+            recent_attempts = 0
+            for field in ["submittedAt", "created_at", "createdAt", "timestamp"]:
+                try:
+                    recent_attempts = attempts_col.count_documents({
+                        field: {"$gte": seven_days_ago}
+                    })
+                    if recent_attempts > 0:
+                        break
+                except:
+                    continue
+        except Exception as e:
+            logger.error(f"Recent attempts error: {str(e)}")
+            recent_attempts = 0
+        
+        # New users (last 7 days)
+        try:
+            new_users = 0
+            for field in ["createdAt", "created_at", "timestamp"]:
+                try:
+                    new_users = users_col.count_documents({
+                        field: {"$gte": seven_days_ago}
+                    })
+                    if new_users > 0:
+                        break
+                except:
+                    continue
+        except Exception as e:
+            logger.error(f"New users error: {str(e)}")
+            new_users = 0
+        
+        response["engagement"] = {
+            "activeUsers": active_users,
+            "avgQuizzesPerUser": avg_quizzes_per_user,
+            "platformAvgScore": platform_avg_score,
+            "recentAttempts7d": recent_attempts,
+            "newUsers7d": new_users
+        }
+        
+        # ═══════════════════════════════════════════════════════
+        # 3. Skill Distribution
+        # ═══════════════════════════════════════════════════════
+        
+        try:
+            response["skillDistribution"] = {
+                "beginner": profiles_col.count_documents({"currentSkillLevel": "beginner"}),
+                "intermediate": profiles_col.count_documents({"currentSkillLevel": "intermediate"}),
+                "advanced": profiles_col.count_documents({"currentSkillLevel": "advanced"}),
+                "expert": profiles_col.count_documents({"currentSkillLevel": "expert"})
+            }
+        except Exception as e:
+            logger.error(f"Skill distribution error: {str(e)}")
+            response["skillDistribution"] = {
+                "beginner": 0, "intermediate": 0, "advanced": 0, "expert": 0
+            }
+        
+        # ═══════════════════════════════════════════════════════
+        # 4. ML Features
+        # ═══════════════════════════════════════════════════════
+        
+        response["mlFeatures"] = {
+            "skillPrediction": True,
+            "contentGeneration": True,
+            "quizGeneration": True,
+            "personalizedRecommendations": True,
+            "adaptiveDifficulty": True,
+            "nlpEnhancement": True
+        }
+        
+        # Check NLP model
+        try:
+            import spacy
+            nlp = spacy.load("en_core_web_md")
+            response["mlFeatures"]["nlpEnhancement"] = True
+        except:
+            response["mlFeatures"]["nlpEnhancement"] = False
+        
+        # ═══════════════════════════════════════════════════════
+        # 5. System Health
+        # ═══════════════════════════════════════════════════════
+        
+        # Check database
+        db_health = "healthy"
+        try:
+            db.command("ping")
+        except:
+            db_health = "unhealthy"
+        
+        # Check AI API
+        ai_health = "healthy"
+        try:
+            if not os.getenv('GEMINI_API_KEY'):
+                ai_health = "not configured"
+        except:
+            ai_health = "unavailable"
+        
+        response["systemHealth"] = {
+            "database": db_health,
+            "aiApi": ai_health,
+            "overall": "healthy" if db_health == "healthy" else "degraded"
+        }
+        
+        # ═══════════════════════════════════════════════════════
+        # 6. Top Students (Optional - can fail gracefully)
+        # ═══════════════════════════════════════════════════════
+        
+        try:
+            top_students = list(profiles_col.find(
+                {"quizAnalytics.avgScore": {"$exists": True}},
+                {
+                    "demographics.name": 1,
+                    "quizAnalytics.avgScore": 1,
+                    "quizAnalytics.totalQuizzes": 1,
+                    "currentSkillLevel": 1
+                }
+            ).sort("quizAnalytics.avgScore", -1).limit(5))
+            
+            response["topStudents"] = [
+                {
+                    "name": s.get("demographics", {}).get("name", "Unknown"),
+                    "avgScore": s.get("quizAnalytics", {}).get("avgScore", 0),
+                    "totalQuizzes": s.get("quizAnalytics", {}).get("totalQuizzes", 0),
+                    "skillLevel": s.get("currentSkillLevel", "beginner")
+                }
+                for s in top_students
+            ]
+        except Exception as e:
+            logger.error(f"Top students error: {str(e)}")
+            response["topStudents"] = []
+        
+        # ═══════════════════════════════════════════════════════
+        # 7. Popular Topics (Optional)
+        # ═══════════════════════════════════════════════════════
+        
+        try:
+            popular = list(attempts_col.aggregate([
+                {"$group": {
+                    "_id": "$topic",
+                    "count": {"$sum": 1}
+                }},
+                {"$sort": {"count": -1}},
+                {"$limit": 5}
+            ]))
+            
+            response["popularTopics"] = [
+                {"topic": p["_id"], "attempts": p["count"]}
+                for p in popular if p.get("_id")
+            ]
+        except Exception as e:
+            logger.error(f"Popular topics error: {str(e)}")
+            response["popularTopics"] = []
+        
+        logger.info(f"✅ Admin analytics accessed successfully")
+        return response, 200
+        
+    except Exception as e:
+        logger.error(f"❌ Analytics overview fatal error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        
+        return {
+            "error": "Failed to load platform analytics",
+            "details": str(e),
+            "status": "error"
+        }, 500
+
+# ═══════════════════════════════════════════════════════
+# Additional Helper Endpoint: User Growth Chart Data
+# ═══════════════════════════════════════════════════════
+
+@app.get("/api/analytics/growth")
+@auth_required
+def get_growth_analytics():
+    """Get user growth data for charts"""
+    try:
+        user_role = request.user.get("role", "student")
+        
+        if user_role != "admin":
+            return {"error": "Admin access required"}, 403
+        
+        # Get daily user registrations for last 30 days
+        thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+        
+        daily_registrations = list(users_col.aggregate([
+            {
+                "$match": {
+                    "createdAt": {"$gte": thirty_days_ago}
+                }
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d",
+                            "date": "$createdAt"
+                        }
+                    },
+                    "count": {"$sum": 1}
+                }
+            },
+            {
+                "$sort": {"_id": 1}
+            }
+        ]))
+        
+        # Get daily quiz attempts
+        daily_attempts = list(attempts_col.aggregate([
+            {
+                "$match": {
+                    "submittedAt": {"$gte": thirty_days_ago}
+                }
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "$dateToString": {
+                            "format": "%Y-%m-%d",
+                            "date": "$submittedAt"
+                        }
+                    },
+                    "count": {"$sum": 1},
+                    "avgScore": {"$avg": "$score.percentage"}
+                }
+            },
+            {
+                "$sort": {"_id": 1}
+            }
+        ]))
+        
+        return {
+            "status": "success",
+            "userGrowth": [
+                {
+                    "date": item["_id"],
+                    "newUsers": item["count"]
+                }
+                for item in daily_registrations
+            ],
+            "quizActivity": [
+                {
+                    "date": item["_id"],
+                    "attempts": item["count"],
+                    "avgScore": round(item["avgScore"], 2)
+                }
+                for item in daily_attempts
+            ]
+        }, 200
+        
+    except Exception as e:
+        logger.error(f"Growth analytics error: {str(e)}")
+        return {"error": "Failed to load growth data"}, 500
+
 
 # ========================================
 # UTILITY FUNCTIONS FOR SAMPLE DATA
