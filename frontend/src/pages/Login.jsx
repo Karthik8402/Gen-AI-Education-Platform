@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
-import { useTheme } from '@/context/ThemeContext' // ✅ Add theme context
+import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext' // ✅ Add theme context
 import {
   Eye,
   EyeOff,

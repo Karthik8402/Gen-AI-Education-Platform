@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useTheme } from '@/context/ThemeContext'
-import { useAuth } from '@/context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
+import { useAuth } from '../../context/AuthContext'
 import {
   ArrowUpRightIcon,
   BookOpenIcon,
@@ -38,8 +38,8 @@ import {
   RotateCcw,
   AlertCircle
 } from 'lucide-react'
-import { api } from '@/services/api'
-import { formatDate } from '@/services/utils/helpers'
+import { api } from '../../services/api'
+import { formatDate } from '../../services/utils/helpers'
 
 const StatCard = ({ title, value, change, icon: Icon, color, unit = '', trend, subtitle }) => {
   const { currentTheme } = useTheme()

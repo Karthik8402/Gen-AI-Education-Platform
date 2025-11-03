@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useTheme } from '@/context/ThemeContext' // ✅ Add theme context
-import { api } from '@/services/api'
+import { useTheme } from '../context/ThemeContext' // ✅ Add theme context
+import { api } from '../services/api'
 import {
   Mail,
   Lock,

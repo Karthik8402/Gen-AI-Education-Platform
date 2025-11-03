@@ -1,8 +1,8 @@
 // src/components/layout/Navbar.jsx
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
-import { useTheme } from '@/context/ThemeContext'
+import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext'
 import {
   Menu,
   X,
@@ -19,7 +19,7 @@ import {
   PenTool,
   GraduationCap
 } from 'lucide-react'
-import ThemeToggle from '../ui/ThemeToggle'
+import ThemeToggle from '../../components/ui/ThemeToggle'
 
 const Navbar = () => {
   const { currentTheme } = useTheme()

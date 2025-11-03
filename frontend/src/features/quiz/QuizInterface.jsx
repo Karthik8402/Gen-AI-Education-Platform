@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTheme } from '@/context/ThemeContext' // ✅ Add ThemeContext
-import Button from '@/components/ui/Button'
-import { api } from '@/services/api'
+import { useTheme } from '../../context/ThemeContext' // ✅ Add ThemeContext
+import Button from '../../components/ui/Button'
+import { api } from '../../services/api'
 import {
   Clock,
   Brain,
@@ -20,7 +20,6 @@ import {
   AlertCircle,
   Settings
 } from 'lucide-react'
-import '@/styles/QuizInterface.css'
 
 export default function QuizInterface() {
   const [state, setState] = useState('setup')

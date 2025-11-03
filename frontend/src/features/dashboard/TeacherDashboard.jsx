@@ -12,8 +12,8 @@ import {
   DocumentTextIcon,
   EyeIcon
 } from '@heroicons/react/24/outline'
-import { api } from '@/services/api'
-import { formatDate } from '@/services/utils/helpers'
+import { api } from '../../services/api'
+import { formatDate } from '../../services/utils/helpers'
 
 const StatCard = ({ title, value, change, icon: Icon, color, unit = '' }) => (
   <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">

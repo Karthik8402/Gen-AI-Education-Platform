@@ -110,10 +110,10 @@
 
 
 import React from 'react'
-import { useAuth } from '@/context/AuthContext'
-import StudentDashboard from '@/features/dashboard/StudentDashboard'
-import TeacherDashboard from '@/features/dashboard/TeacherDashboard'
-import AdminDashboard from '@/features/dashboard/AdminDashboard'
+import { useAuth } from '../context/AuthContext'
+import StudentDashboard from '../features/dashboard/StudentDashboard'
+import TeacherDashboard from '../features/dashboard/TeacherDashboard'
+import AdminDashboard from '../features/dashboard/AdminDashboard'
 
 export default function Dashboard() {
   const { user } = useAuth()

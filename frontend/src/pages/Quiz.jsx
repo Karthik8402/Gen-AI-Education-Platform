@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { api } from '@/services/api' // add this import to call Flask
+import { api } from '../services/api' // add this import to call Flask
 
 export default function Quiz() {
   const [questions, setQuestions] = useState([])        // start empty

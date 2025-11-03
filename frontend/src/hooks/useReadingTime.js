@@ -1,6 +1,6 @@
 // src/hooks/useReadingTime.js
 import { useEffect, useRef } from 'react'
-import { api } from '@/services/api'
+import { api } from '../services/api'
 
 export function useReadingTime(contentId, contentType) {
   const startTime = useRef(Date.now())

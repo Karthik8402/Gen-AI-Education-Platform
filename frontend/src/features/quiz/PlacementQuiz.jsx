@@ -1,10 +1,10 @@
 // src/features/quiz/PlacementQuiz.jsx
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { api } from '@/services/api'
-import { useAuth } from '@/context/AuthContext'
-import { useTheme } from '@/context/ThemeContext' // ✅ Add theme context
-import Button from '@/components/ui/Button'
+import { api } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
+import { useTheme } from '../../context/ThemeContext' // ✅ Add theme context
+import Button from '../../components/ui/Button'
 import {
   Brain,
   Target,

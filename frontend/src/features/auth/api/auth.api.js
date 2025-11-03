@@ -1,5 +1,5 @@
 // src/feature/auth/api/auth.api.js
-import { api } from '@/services/api'
+import { api } from '../services/api'
 
 /**
  * login

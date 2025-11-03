@@ -1,6 +1,6 @@
 // src/components/ui/ThemeToggle.jsx
 import React, { useState, useRef, useEffect } from 'react'
-import { useTheme } from '@/context/ThemeContext' // ✅ Make sure this path is correct
+import { useTheme } from '../../context/ThemeContext' // ✅ Make sure this path is correct
 import { Sun, Moon, Monitor, ChevronDown } from 'lucide-react'
 
 const ThemeToggle = ({ variant = 'simple' }) => {

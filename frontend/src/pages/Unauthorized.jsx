@@ -1,8 +1,8 @@
 // src/pages/Unauthorized.jsx
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '@/context/AuthContext'
-import { useTheme } from '@/context/ThemeContext' // ✅ Add theme context
+import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext' // ✅ Add theme context
 import { ShieldExclamationIcon, HomeIcon, ChartBarIcon } from '@heroicons/react/24/outline'
 import { AlertCircle, Lock, ArrowLeft, BarChart3 } from 'lucide-react'
 

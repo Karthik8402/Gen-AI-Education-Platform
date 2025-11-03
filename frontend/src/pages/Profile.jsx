@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTheme } from '@/context/ThemeContext';
-import { api } from '@/services/api'
+import { useTheme } from '../context/ThemeContext'
+import { api } from '../services/api'
 import {
   User,
   Calendar,

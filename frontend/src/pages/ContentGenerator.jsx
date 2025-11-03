@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useTheme } from '@/context/ThemeContext'
-import { api } from '@/services/api'
+import { useTheme } from '../context/ThemeContext'
+import { api } from '../services/api'
 import {
   Copy,
   Download,

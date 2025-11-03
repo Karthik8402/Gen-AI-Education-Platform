@@ -1,56 +1,54 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import Navbar from '@/components/ui/Navbar'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Navbar from '../components/ui/Navbar'             // ✅ Changed
 
 // Page components
-import Home from '@/pages/Home'
-import Login from '@/pages/Login'
-import SignUp from '@/pages/SignUp'
-import Reset from '@/pages/Reset'
-import Dashboard from '@/pages/Dashboard'
-import Profile from '@/pages/Profile'
-import ContentGenerator from '@/pages/ContentGenerator'
-import NotFound from '@/pages/NotFound'
-import Unauthorized from '@/pages/Unauthorized' // ✅ Add this
+import Home from '../pages/Home'                          // ✅ Changed
+import Login from '../pages/Login'
+import SignUp from '../pages/SignUp'
+import Reset from '../pages/Reset'
+import Dashboard from '../pages/Dashboard'
+import Profile from '../pages/Profile'
+import ContentGenerator from '../pages/ContentGenerator'
+import NotFound from '../pages/NotFound'
+import Unauthorized from '../pages/Unauthorized'
 
 // Quiz components
-import Quiz from '@/pages/Quiz'
-import QuizHistory from '@/features/quiz/QuizHistory'
-import QuizResults from '@/features/quiz/QuizResults'
-import QuizInterface from '@/features/quiz/QuizInterface'
-import PlacementQuiz from '@/features/quiz/PlacementQuiz'
+import Quiz from '../pages/Quiz'
+import QuizHistory from '../features/quiz/QuizHistory'
+import QuizResults from '../features/quiz/QuizResults'
+import QuizInterface from '../features/quiz/QuizInterface'
+import PlacementQuiz from '../features/quiz/PlacementQuiz'
 
 // Dashboard components
-import StudentDashboard from '@/features/dashboard/StudentDashboard'
-import TeacherDashboard from '@/features/dashboard/TeacherDashboard'
-import AdminDashboard from '@/features/dashboard/AdminDashboard'
+import StudentDashboard from '../features/dashboard/StudentDashboard'
+import TeacherDashboard from '../features/dashboard/TeacherDashboard'
+import AdminDashboard from '../features/dashboard/AdminDashboard'
 
-// Analytics Features
+// Analytics
 import AnalyticsMe from '../features/Analytics/AnalyticsMe'
 
-// Course
-import Courses from '@/pages/Courses'
-import CourseList from '@/features/courses/CourseList'
-import CourseCard from '@/features/courses/CourseCard'
+// Courses
+import Courses from '../pages/Courses'
+import CourseCard from '../features/courses/CourseCard'
 
-// Auth component
-import PrivateRoute from '@/features/auth/PrivateRoute'
+// Auth
+import PrivateRoute from '../features/auth/PrivateRoute'
 
 export default function AppRouter() {
   return (
-    <>
+    <BrowserRouter>
       <Navbar />
-
       <main className="min-h-screen bg-gray-50">
         <Routes>
-          {/* ========= PUBLIC ROUTES ========= */}
+          {/* PUBLIC ROUTES */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/reset" element={<Reset />} />
-          <Route path="/unauthorized" element={<Unauthorized />} /> {/* ✅ Add this */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* ========= ROLE-SPECIFIC DASHBOARD ROUTES ========= */}
+          {/* DASHBOARDS */}
           <Route
             path="/dashboard/student"
             element={
@@ -75,8 +73,6 @@ export default function AppRouter() {
               </PrivateRoute>
             }
           />
-
-          {/* ✅ Single dashboard route that auto-redirects based on role */}
           <Route
             path="/dashboard"
             element={
@@ -86,7 +82,7 @@ export default function AppRouter() {
             }
           />
 
-          {/* ========= PROTECTED ROUTES ========= */}
+          {/* PROTECTED ROUTES */}
           <Route
             path="/profile"
             element={
@@ -96,7 +92,7 @@ export default function AppRouter() {
             }
           />
 
-          {/* ========= QUIZ ROUTES ========= */}
+          {/* QUIZ ROUTES */}
           <Route
             path="/quiz"
             element={
@@ -105,7 +101,6 @@ export default function AppRouter() {
               </PrivateRoute>
             }
           />
-
           <Route
             path="/quiz/interface"
             element={
@@ -114,7 +109,6 @@ export default function AppRouter() {
               </PrivateRoute>
             }
           />
-
           <Route
             path="/quiz/history"
             element={
@@ -123,7 +117,6 @@ export default function AppRouter() {
               </PrivateRoute>
             }
           />
-
           <Route
             path="/quiz/results/:attemptId"
             element={
@@ -132,17 +125,6 @@ export default function AppRouter() {
               </PrivateRoute>
             }
           />
-
-          {/* Analytics Routes */}
-        <Route 
-          path="/analytics" 
-          element={
-            <PrivateRoute>
-              <AnalyticsMe />
-            </PrivateRoute>
-          } 
-        />
-          
           <Route
             path="/placement-quiz"
             element={
@@ -152,7 +134,17 @@ export default function AppRouter() {
             }
           />
 
-          {/* ========= COURSE ROUTES ========= */}
+          {/* ANALYTICS */}
+          <Route
+            path="/analytics"
+            element={
+              <PrivateRoute>
+                <AnalyticsMe />
+              </PrivateRoute>
+            }
+          />
+
+          {/* COURSES */}
           <Route
             path="/courses"
             element={
@@ -161,7 +153,6 @@ export default function AppRouter() {
               </PrivateRoute>
             }
           />
-
           <Route
             path="/courses/:courseId"
             element={
@@ -171,7 +162,7 @@ export default function AppRouter() {
             }
           />
 
-          {/* ========= CONTENT GENERATION ROUTES ========= */}
+          {/* CONTENT GENERATION */}
           <Route
             path="/content"
             element={
@@ -181,10 +172,10 @@ export default function AppRouter() {
             }
           />
 
-          {/* ========= 404 FALLBACK ========= */}
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-    </>
+    </BrowserRouter>
   )
 }

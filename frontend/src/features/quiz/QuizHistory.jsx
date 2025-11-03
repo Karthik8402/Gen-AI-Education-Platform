@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useTheme } from '@/context/ThemeContext' // ✅ Add ThemeContext
-import { api } from '@/services/api'
-import { formatDate } from '@/services/utils/helpers'
+import { useTheme } from '../../context/ThemeContext' // ✅ Add ThemeContext
+import { api } from '../../services/api'
+import { formatDate } from '../../services/utils/helpers'
 import {
   History,
   TrendingUp,

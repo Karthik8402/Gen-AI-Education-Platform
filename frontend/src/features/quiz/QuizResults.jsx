@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useLocation, useNavigate } from 'react-router-dom'
-import { api } from '@/services/api'
-import { useTheme } from '@/context/ThemeContext'
+import { api } from '../../services/api'
+import { useTheme } from '../../context/ThemeContext'
 import {
   Trophy,
   Target,

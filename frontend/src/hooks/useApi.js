@@ -1,6 +1,6 @@
 // src/hooks/useApi.js
 import { useCallback, useMemo, useState } from 'react'
-import { api } from '@/services/api'
+import { api } from '../services/api'
 
 /**
  * useApi

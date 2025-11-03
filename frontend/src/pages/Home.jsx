@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useTheme } from '@/context/ThemeContext' // ✅ Add this import
+import { useTheme } from '../context/ThemeContext' // ✅ Add this import
 import { 
   BookOpenIcon, 
   AcademicCapIcon, 
