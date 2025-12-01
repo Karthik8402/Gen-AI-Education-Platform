@@ -15,23 +15,6 @@ from routes.content import content_bp
 import google.generativeai as genai
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-app = Flask(__name__)
-
-# ✅ CORS Configuration - Simple and Clean
-CORS(
-    app,
-    resources={r"/api/*": {"origins": [
-        "http://localhost:5173",           # Local dev
-        "http://localhost:3000",           # Local dev
-        "http://127.0.0.1:5173",          # Local dev
-        "http://127.0.0.1:3000",          # Local dev
-        "https://gen-ai-education-platform-1h0vml9px-karthiks-projects-9cfee133.vercel.app"  # ✅ YOUR FRONTEND URL
-    ]}},
-    supports_credentials=True,
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
-)
-
 JWT_SECRET = os.getenv("JWT_SECRET", "dev_secret")
 
 # Initialize logger
