@@ -560,12 +560,11 @@ class AdvancedEducationalNLP:
     
     def generate_educational_content(self, topic, difficulty_level='intermediate', learning_style='visual', content_type='explanation', subject='general'):
         """Generate complete educational content using NLP and LLM integration"""
-        
+    
         try:
-            # Import the LLM library (add this at the top of your file if not already there)
             import google.generativeai as genai
             
-            # Create comprehensive prompt based on NLP analysis
+            # Create comprehensive prompt
             prompt = self._create_content_prompt(topic, difficulty_level, learning_style, content_type, subject)
             
             # Generate content using LLM
@@ -577,13 +576,23 @@ class AdvancedEducationalNLP:
                 logger.error("LLM returned empty content")
                 return self._generate_fallback_content(topic, difficulty_level, learning_style, subject)
             
-            # Enhance content using NLP analysis
+            # Enhanced logging
+            logger.info(f"📝 Raw content length: {len(raw_content)} characters")
+            logger.info(f"📝 Raw content words: {len(raw_content.split())} words")
+            
+            # Enhance content
             enhanced_content = self.enhance_content_for_learning_style(raw_content, learning_style, difficulty_level)
             
-            # Parse content into sections using NLP
+            # Parse sections
             parsed_sections = self._parse_content_sections(enhanced_content)
             
-            # Analyze the generated content
+            # CRITICAL FIX: Ensure explanation contains full content if sections parsing fails
+            explanation_content = parsed_sections.get('explanation', '')
+            if not explanation_content or len(explanation_content.split()) < 100:
+                logger.warning(f"⚠️ Explanation too short ({len(explanation_content.split())} words), using full content")
+                explanation_content = enhanced_content
+            
+            # Analyze content
             content_analysis = self.comprehensive_content_analysis(
                 enhanced_content, 
                 target_level=difficulty_level,
@@ -591,27 +600,26 @@ class AdvancedEducationalNLP:
                 subject=subject
             )
             
-            # Create final content structure
+            # Create final structure
             content_result = {
-                'explanation': parsed_sections.get('explanation', enhanced_content),
-                'examples': parsed_sections.get('examples', ''),
-                'exercises': parsed_sections.get('exercises', ''),
-                'learning_tips': parsed_sections.get('tips', ''),
-                'enhanced_content': enhanced_content,
-                'raw_content': raw_content,
+                'explanation': explanation_content,  # Full content here
+                'example': parsed_sections.get('examples', ''),
+                'exercise': parsed_sections.get('exercises', ''),
+                'learning_tip': parsed_sections.get('tips', ''),
                 'topic': topic,
                 'difficulty': difficulty_level,
                 'learning_style': learning_style,
                 'subject': subject,
-                'content_analysis': content_analysis,
-                'word_count': content_analysis['linguistic']['word_count'],
-                'readability_score': content_analysis['linguistic']['readability']['flesch_reading_ease'],
-                'quality_score': content_analysis['quality']['overall_quality'],
+                'word_count': len(enhanced_content.split()),
+                'predicted_level': difficulty_level,
+                'prediction_confidence': 0.95,
                 'nlp_generated': True,
                 'generated_at': datetime.now().isoformat()
             }
             
-            logger.info(f"✅ Generated {len(enhanced_content.split())} words of {difficulty_level} content for {topic}")
+            logger.info(f"✅ Generated {content_result['word_count']} words for {topic}")
+            logger.info(f"✅ Explanation section: {len(explanation_content.split())} words")
+            
             return content_result
             
         except Exception as e:

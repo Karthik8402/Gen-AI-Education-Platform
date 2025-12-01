@@ -1,0 +1,134 @@
+[
+  {
+    "user_id": "692d362b5c1d8cdcd686bc28",
+    "type": "practice",
+    "topic": "java",
+    "category": "Education",
+    "difficulty": "intermediate",
+    "questions": [
+      {
+        "question": "Consider a `Shape` class and a `Circle` subclass. If you have `Shape myShape = new Circle();` and both `Shape` and `Circle` have a `draw()` method (with `Circle` overriding `Shape`'s `draw()`), which `draw()` method is invoked when `myShape.draw();` is called?",
+        "choices": [
+          "The `draw()` method of the `Shape` class.",
+          "The `draw()` method of the `Circle` class.",
+          "A compile-time error occurs because `Shape` cannot hold a `Circle` object.",
+          "It depends on whether the `draw()` method in `Shape` is declared as `abstract`."
+        ],
+        "answer": "The `draw()` method of the `Circle` class.",
+        "explanation": "This demonstrates runtime polymorphism. The actual method invoked depends on the runtime type of the object, not the compile-time type of the reference variable. Since `myShape` refers to a `Circle` object, `Circle`'s overridden `draw()` method is called."
+      },
+      {
+        "question": "You are building an application that frequently adds and removes elements from the middle of a list, and occasionally iterates through the list. Which Java Collection class would generally provide the best performance for these operations?",
+        "choices": [
+          "ArrayList",
+          "HashSet",
+          "LinkedList",
+          "Vector"
+        ],
+        "answer": "LinkedList",
+        "explanation": "`LinkedList` stores elements as nodes with references to the next and previous elements. This makes insertions and deletions in the middle of the list very efficient (O(1) after finding the position), as it only requires updating a few pointers. `ArrayList` requires shifting elements (O(n)), `HashSet` doesn't maintain order and is optimized for unique element storage and fast lookups, and `Vector` is similar to `ArrayList` but synchronized, making it generally slower."
+      },
+      {
+        "question": "What is the correct behavior of the `finally` block in Java exception handling?",
+        "choices": [
+          "The `finally` block is executed only if an exception occurs in the `try` block.",
+          "The `finally` block is executed only if no exception occurs in the `try` block.",
+          "The `finally` block is always executed, regardless of whether an exception occurred or was caught, unless the JVM exits.",
+          "The `finally` block is executed only if the `catch` block successfully handles an exception."
+        ],
+        "answer": "The `finally` block is always executed, regardless of whether an exception occurred or was caught, unless the JVM exits.",
+        "explanation": "The `finally` block is designed to contain cleanup code that must be executed regardless of whether an exception occurred or was handled. It guarantees execution even if a `return` statement is encountered in the `try` or `catch` block, or if an uncaught exception propagates. The only exceptions are system exits (e.g., `System.exit()`) or fatal errors."
+      },
+      {
+        "question": "Consider the following Java code snippet:\n```java\nList<String> names = new ArrayList<>();\nnames.add(\"Alice\");\n// names.add(123); // Line X\n```\nIf uncommented, `Line X` would cause a compile-time error. What is the primary benefit of generics in Java that prevents such an error at runtime?",
+        "choices": [
+          "Improved performance by optimizing type casting.",
+          "Type safety at compile-time, reducing `ClassCastException` at runtime.",
+          "Automatic boxing and unboxing of primitive types.",
+          "Enabling reflection to inspect object types at runtime."
+        ],
+        "answer": "Type safety at compile-time, reducing `ClassCastException` at runtime.",
+        "explanation": "Generics provide type safety by enforcing type constraints at compile time. By declaring `List<String>`, the compiler ensures that only `String` objects (or subtypes) can be added to the list. This prevents `ClassCastException`s that would otherwise occur at runtime if an incorrect type (like an `Integer`) were added and later retrieved and cast."
+      },
+      {
+        "question": "What is the effect of declaring a reference variable as `final` in Java?",
+        "choices": [
+          "The object that the reference points to becomes immutable.",
+          "The reference variable itself cannot be reassigned to point to a different object.",
+          "All methods of the object pointed to by the reference become `final`.",
+          "The object can only be accessed by the `final` reference variable."
+        ],
+        "answer": "The reference variable itself cannot be reassigned to point to a different object.",
+        "explanation": "When a reference variable is declared `final`, it means that the variable can only be assigned once. After its initial assignment, it cannot be reassigned to point to a different object. However, the object itself (the state of the object) is not necessarily immutable; its internal state can still be modified if the object's class allows it."
+      }
+    ],
+    "created_at": "2025-12-01T06:56:30.444256+00:00",
+    "_id": "692d3c1e49a55c0f6b9625f8"
+  },
+  {
+    "user_id": "692d362b5c1d8cdcd686bc28",
+    "type": "practice",
+    "topic": "Python",
+    "category": "Education",
+    "difficulty": "intermediate",
+    "questions": [
+      {
+        "question": "What is the primary purpose of using a decorator in Python?",
+        "choices": [
+          "To define a new class based on an existing one.",
+          "To modify the behavior of a function or method without permanently altering its code.",
+          "To create an instance of an object without calling its constructor directly.",
+          "To handle exceptions that occur within a block of code."
+        ],
+        "answer": "To modify the behavior of a function or method without permanently altering its code.",
+        "explanation": "Decorators are syntactic sugar for wrapping one function with another, allowing you to add functionality (like logging, timing, authentication) before or after the original function executes, without changing the original function's source code."
+      },
+      {
+        "question": "Consider the following Python code:\n```python\ndef fibonacci_generator(n):\n    a, b = 0, 1\n    count = 0\n    while count < n:\n        yield a\n        a, b = b, a + b\n        count += 1\n\ngen = fibonacci_generator(5)\nresult = [next(gen) for _ in range(3)]\n```\nWhat will be the value of `result`?",
+        "choices": [
+          "[0, 1, 1]",
+          "[0, 1, 2]",
+          "[0, 1, 1, 2, 3]",
+          "[0, 1, 2, 3, 5]"
+        ],
+        "answer": "[0, 1, 1]",
+        "explanation": "The `fibonacci_generator` uses `yield` to create a generator that produces Fibonacci numbers. The `gen` object is an iterator. The list comprehension `[next(gen) for _ in range(3)]` will call `next()` on the generator three times, retrieving the first three yielded values: 0, then 1, then 1."
+      },
+      {
+        "question": "Which of the following correctly describes the primary benefit of using a `with` statement (context manager) in Python for file operations?",
+        "choices": [
+          "It automatically compresses the file content upon writing.",
+          "It ensures the file is automatically closed, even if errors occur.",
+          "It prevents other processes from accessing the file while it's open.",
+          "It buffers file I/O operations for improved performance."
+        ],
+        "answer": "It ensures the file is automatically closed, even if errors occur.",
+        "explanation": "The `with` statement guarantees that the `__exit__` method of the context manager is called upon exiting the block, regardless of whether the block completes successfully or an exception occurs. For files, this means the file is always properly closed, preventing resource leaks."
+      },
+      {
+        "question": "Given the following class hierarchy:\n```python\nclass A:\n    def method(self):\n        return \"A\"\n\nclass B(A):\n    def method(self):\n        return \"B\"\n\nclass C(A):\n    def method(self):\n        return \"C\"\n\nclass D(B, C):\n    pass\n\nobj = D()\nprint(obj.method())\n```\nWhat will be printed to the console when `obj.method()` is called?",
+        "choices": [
+          "\"A\"",
+          "\"B\"",
+          "\"C\"",
+          "An AttributeError"
+        ],
+        "answer": "\"B\"",
+        "explanation": "Python uses the C3 linearization algorithm for Method Resolution Order (MRO) in multiple inheritance. For `D(B, C)`, the MRO is `D -> B -> C -> A -> object`. When `obj.method()` is called, Python looks for `method` in `D`, then `B`. Since `B` has `method`, it is called, returning \"B\"."
+      },
+      {
+        "question": "What is the output of the following Python code snippet?\n```python\ndata = [(1, 'apple'), (2, 'banana'), (3, 'cherry'), (4, 'date')]\nfiltered_data = [item[1].upper() for item in data if item[0] % 2 == 0]\nprint(filtered_data)\n```",
+        "choices": [
+          "['APPLE', 'BANANA', 'CHERRY', 'DATE']",
+          "['BANANA', 'DATE']",
+          "['apple', 'cherry']",
+          "['APPLE', 'CHERRY']"
+        ],
+        "answer": "['BANANA', 'DATE']",
+        "explanation": "The list comprehension iterates through `data`. The `if item[0] % 2 == 0` condition filters for tuples where the first element (the number) is even. These are `(2, 'banana')` and `(4, 'date')`. For these filtered items, `item[1].upper()` is applied, resulting in 'BANANA' and 'DATE'."
+      }
+    ],
+    "created_at": "2025-12-01T08:58:51.753736+00:00",
+    "_id": "692d58cbf399e458bbb3ae79"
+  }
+]

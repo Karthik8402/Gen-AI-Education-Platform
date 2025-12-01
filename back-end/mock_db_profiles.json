@@ -1,0 +1,82 @@
+[
+  {
+    "studentId": "692d362b5c1d8cdcd686bc28",
+    "profile": {
+      "name": "Karthik K",
+      "skillLevel": "intermediate",
+      "skillConfidence": 0.8,
+      "lastSkillUpdate": "2025-12-01T06:49:33.338727+00:00",
+      "strengths": [],
+      "improvement_areas": [],
+      "preferred_topics": []
+    },
+    "performanceMetrics": {
+      "averageScore": 75.0
+    },
+    "placement_completed": true,
+    "_id": "692d3844572fd5a01438851a",
+    "demographics": {
+      "name": "Karthik K",
+      "age": 22,
+      "department": "Computer Science",
+      "educationLevel": "postgraduate"
+    },
+    "cognitiveProfile": {
+      "learningStyle": "reading"
+    },
+    "updated_at": "2025-12-01T06:49:33.338727+00:00",
+    "created_at": "2025-12-01T06:49:33.338727+00:00",
+    "lastPredictedLevel": "intermediate",
+    "predictionConfidence": 0.7789999999999999,
+    "lastContentTopic": "Python",
+    "contentInteractionAt": "2025-12-01T08:53:40.184960+00:00",
+    "predictionValidation": {
+      "contentQuality": 0.48929836995038983,
+      "conceptComplexity": 0.5014174344436569,
+      "readabilityScore": 34.54482092341402,
+      "timestamp": "2025-12-01T08:53:40.184962+00:00"
+    }
+  },
+  {
+    "studentId": "692d5c54e986b1a220cb469b",
+    "profile": {
+      "name": "Dinesh S",
+      "skillLevel": "beginner",
+      "skillConfidence": 0.8,
+      "lastSkillUpdate": "2025-12-01T09:13:56.849271+00:00",
+      "strengths": [],
+      "improvement_areas": [],
+      "preferred_topics": []
+    },
+    "demographics": {
+      "name": "Dinesh S",
+      "age": 22,
+      "department": "computer-science",
+      "educationLevel": "undergraduate"
+    },
+    "cognitiveProfile": {
+      "learningStyle": "visual"
+    },
+    "performanceMetrics": {
+      "totalAttempts": 0,
+      "averageScore": 12.5,
+      "completionRate": 0.0,
+      "streakDays": 0,
+      "timePerTopic": 0
+    },
+    "updated_at": "2025-12-01T09:13:56.849271+00:00",
+    "created_at": "2025-12-01T09:13:56.849271+00:00",
+    "_id": "692d5c54e986b1a220cb469c",
+    "placement_completed": true,
+    "lastPredictedLevel": "beginner",
+    "predictionConfidence": 0.9249999999999999,
+    "lastContentTopic": "Java",
+    "contentInteractionAt": "2025-12-01T10:26:03.487288+00:00",
+    "predictionValidation": {
+      "contentQuality": 0.0,
+      "conceptComplexity": 0.5,
+      "readabilityScore": 0.5,
+      "timestamp": "2025-12-01T10:26:03.487288+00:00"
+    }
+  }
+]

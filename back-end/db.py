@@ -10,9 +10,9 @@ MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017/genai-quiz")
 
 use_mock_db = False
 try:
-    client = MongoClient(MONGODB_URI)
+    client = MongoClient(MONGODB_URI, serverSelectionTimeoutMS=2000)
     # Specify database name explicitly
-    db = client['genai-quiz']  # Use explicit database name
+    db = client['genai-quiz']
     
     # Test connection
     client.admin.command('ismaster')
@@ -20,7 +20,7 @@ try:
     
 except (ConnectionFailure, ConfigurationError) as e:
     print(f"❌ MongoDB connection failed: {e}")
-    print("🔄 Using mock database for development")
+    print("🔄 Using persistent mock database for development")
     use_mock_db = True
 
 class MockCursor:
@@ -45,6 +45,10 @@ class MockCursor:
         sorted_data = sorted(self._data, key=get_sort_key, reverse=reverse)
         return MockCursor(sorted_data)
     
+    def limit(self, n):
+        """Limit the number of results"""
+        return MockCursor(self._data[:n])
+    
     def __iter__(self):
         """Make cursor iterable"""
         return iter(self._data)
@@ -52,12 +56,16 @@ class MockCursor:
     def __next__(self):
         """Support next() function"""
         return next(iter(self._data))
-
-class PersistentMockCollection:
-    def __init__(self, filename):
-        self.filename = f"mock_data_{filename}.json"
-        self._data = self._load_data()
     
+    def __list__(self):
+        return self._data
+
+class MockCollection:
+    def __init__(self, name="default"):
+        self.name = name
+        self.filename = f"mock_db_{name}.json"
+        self._data = self._load_data()
+        
     def _load_data(self):
         if os.path.exists(self.filename):
             try:
@@ -65,42 +73,38 @@ class PersistentMockCollection:
                     data = json.load(f)
                     # Convert datetime strings back to datetime objects
                     for item in data:
-                        if 'created_at' in item and isinstance(item['created_at'], str):
-                            item['created_at'] = datetime.fromisoformat(item['created_at'].replace('Z', '+00:00'))
+                        for key, val in item.items():
+                            if isinstance(val, str) and val.endswith("+00:00") and "T" in val:
+                                try:
+                                    item[key] = datetime.fromisoformat(val)
+                                except:
+                                    pass
+                    print(f"📂 Loaded {len(data)} documents from {self.filename}")
                     return data
-            except:
-                pass
+            except Exception as e:
+                print(f"⚠️ Failed to load {self.filename}: {e}")
+                return []
         return []
-    
-    def _save_data(self):
-        # Convert datetime objects to strings for JSON serialization
-        data_to_save = []
-        for item in self._data:
-            item_copy = dict(item)
-            if 'created_at' in item_copy and hasattr(item_copy['created_at'], 'isoformat'):
-                item_copy['created_at'] = item_copy['created_at'].isoformat()
-            data_to_save.append(item_copy)
-        
-        with open(self.filename, 'w') as f:
-            json.dump(data_to_save, f, indent=2)
-    
-    def insert_one(self, doc):
-        new_doc = dict(doc)
-        new_doc["_id"] = "mock_id_12345"
-        self._data.append(new_doc)
-        self._save_data()  # Save after insert
-        
-        class MockResult:
-            inserted_id = "mock_id_12345"
-        return MockResult()
 
-class MockCollection:
-    def __init__(self):
-        self._data = []
-        
+    def _save_data(self):
+        try:
+            # Convert datetime objects to strings for JSON serialization
+            data_to_save = []
+            for item in self._data:
+                item_copy = dict(item)
+                for key, val in item_copy.items():
+                    if isinstance(val, datetime):
+                        item_copy[key] = val.isoformat()
+                data_to_save.append(item_copy)
+            
+            with open(self.filename, 'w') as f:
+                json.dump(data_to_save, f, indent=2)
+            # print(f"💾 Saved {len(data_to_save)} documents to {self.filename}")
+        except Exception as e:
+            print(f"❌ Failed to save {self.filename}: {e}")
+
     def find_one(self, query):
-        print(f"🔍 MockCollection.find_one called with query: {query}")
-        print(f"🔍 Current data in collection: {len(self._data)} documents")
+        # print(f"🔍 MockCollection({self.name}).find_one called with query: {query}")
         
         if not query:
             return self._data[0] if self._data else None
@@ -109,62 +113,53 @@ class MockCollection:
         if query.get("email"):
             for user in self._data:
                 if query.get("email") == user.get("email"):
-                    print(f"🔍 Found user by email: {user}")
                     return user
                     
-        # Handle _id-based queries (for /api/auth/me)
+        # Handle _id-based queries
         if query.get("_id"):
-            for user in self._data:
-                if query.get("_id") == user.get("_id"):
-                    print(f"🔍 Found user by _id: {user}")
-                    return user
+            search_id = str(query.get("_id"))
+            for doc in self._data:
+                if str(doc.get("_id")) == search_id:
+                    return doc
         
-        # ✅ FIX: Handle studentId queries (THIS WAS MISSING!)
+        # Handle studentId queries
         if query.get("studentId"):
             for doc in self._data:
                 if doc.get("studentId") == query.get("studentId"):
-                    print(f"🔍 Found profile by studentId: {doc}")
                     return doc
         
-        # Handle multiple field queries (for quiz submission)
-        if len(query) > 1:
-            for doc in self._data:
-                match = True
-                for key, value in query.items():
-                    if doc.get(key) != value:
+        # Generic query matching
+        for doc in self._data:
+            match = True
+            for key, value in query.items():
+                # Handle ObjectId comparison
+                if key == "_id":
+                    if str(doc.get(key)) != str(value):
                         match = False
                         break
-                if match:
-                    print(f"🔍 Found document: {doc}")
-                    return doc
-        
-        # ✅ FIX: Handle any single field query (fallback)
-        for key, value in query.items():
-            for doc in self._data:
-                if doc.get(key) == value:
-                    print(f"🔍 Found document by {key}: {doc}")
-                    return doc
+                elif doc.get(key) != value:
+                    match = False
+                    break
+            if match:
+                return doc
                     
-        print("🔍 No document found matching query")
         return None
         
     def insert_one(self, doc):
-        print(f"🔍 MockCollection.insert_one called with doc keys: {list(doc.keys())}")
+        # print(f"� MockCollection({self.name}).insert_one called")
         
-        # ✅ PREVENT DUPLICATES: Check for existing documents
-        unique_fields = ['email', 'studentId']
-        for field in unique_fields:
-            if field in doc:
-                existing = self.find_one({field: doc[field]})
-                if existing:
-                    print(f"❌ Duplicate {field} found: {doc[field]}")
-                    raise Exception(f"Duplicate {field}: {doc[field]}")
+        # Check uniqueness for specific collections
+        if self.name == "users" and "email" in doc:
+            if self.find_one({"email": doc["email"]}):
+                raise Exception("Duplicate email")
         
         # Create a copy to avoid reference issues
         new_doc = dict(doc)
-        new_doc["_id"] = f"mock_id_{len(self._data)+1}"  # ✅ Unique IDs
+        if "_id" not in new_doc:
+            new_doc["_id"] = str(ObjectId())
+            
         self._data.append(new_doc)
-        print(f"🔍 Data after insert: {len(self._data)} documents")
+        self._save_data()  # ✅ Save after insert
         
         class MockResult:
             inserted_id = new_doc["_id"]
@@ -179,163 +174,151 @@ class MockCollection:
             for doc in self._data:
                 match = True
                 for key, value in query.items():
-                    if doc.get(key) != value:
+                    # Handle ObjectId comparison
+                    if key == "_id":
+                        if str(doc.get(key)) != str(value):
+                            match = False
+                            break
+                    elif doc.get(key) != value:
                         match = False
                         break
                 if match:
                     filtered_data.append(doc)
         
-        print(f"🔍 MockCollection.find returned {len(filtered_data)} documents")
         return MockCursor(filtered_data)
 
     def count_documents(self, query=None):
         if query is None:
             return len(self._data)
-        
-        count = 0
-        for doc in self._data:
-            match = True
-            for key, value in query.items():
-                if doc.get(key) != value:
-                    match = False
-                    break
-            if match:
-                count += 1
-        return count
+        return len(list(self.find(query)))
 
     def estimated_document_count(self):
         return len(self._data)
 
     def create_index(self, *args, **kwargs):
-        """Mock index creation - logs but doesn't actually create indexes"""
-        print(f"📝 Mock database: create_index called with {args}, {kwargs}")
         pass
 
-    # in MockCollection
     def find_one_and_update(self, filter_query, update_query, **kwargs):
         doc = self.find_one(filter_query)
         if doc:
-            for k, v in update_query.get("$set", {}).items():
-                # handle dotted paths
-                current = doc
-                parts = k.split(".")
-                for p in parts[:-1]:
-                    if p not in current or not isinstance(current[p], dict):
-                        current[p] = {}
-                    current = current[p]
-                current[parts[-1]] = v
-        return doc
-
+            # Apply updates
+            if "$set" in update_query:
+                for k, v in update_query["$set"].items():
+                    # handle dotted paths
+                    current = doc
+                    parts = k.split(".")
+                    for p in parts[:-1]:
+                        if p not in current or not isinstance(current[p], dict):
+                            current[p] = {}
+                        current = current[p]
+                    current[parts[-1]] = v
+            
+            self._save_data()  # ✅ Save after update
+            return doc
+        
+        # Handle upsert
+        if kwargs.get("upsert"):
+            new_doc = dict(filter_query)
+            if "$set" in update_query:
+                for k, v in update_query["$set"].items():
+                    # Handle nested keys for upsert
+                    if '.' in k:
+                        parts = k.split('.')
+                        current = new_doc
+                        for p in parts[:-1]:
+                            if p not in current:
+                                current[p] = {}
+                            current = current[p]
+                        current[parts[-1]] = v
+                    else:
+                        new_doc[k] = v
+            
+            # Add defaults if missing
+            if "_id" not in new_doc:
+                new_doc["_id"] = str(ObjectId())
+                
+            self.insert_one(new_doc)
+            return new_doc
+            
+        return None
 
     def update_one(self, filter_query, update_data, upsert=False):
-        """✅ CRITICAL FIX: Add missing update_one method"""
-        try:
-            print(f"🔄 MockCollection.update_one called with filter: {filter_query}")
+        doc = self.find_one(filter_query)
+        if doc:
+            # Apply $set operations
+            if '$set' in update_data:
+                for key, value in update_data['$set'].items():
+                    if '.' in key:
+                        keys = key.split('.')
+                        current = doc
+                        for k in keys[:-1]:
+                            if k not in current:
+                                current[k] = {}
+                            current = current[k]
+                        current[keys[-1]] = value
+                    else:
+                        doc[key] = value
             
-            # Find document to update
-            doc_found = False
-            for doc in self._data:
-                # Check if document matches filter
-                match = True
-                for key, value in filter_query.items():
-                    if doc.get(key) != value:
-                        match = False
-                        break
-                
-                if match:
-                    doc_found = True
-                    # Apply $set operations
-                    if '$set' in update_data:
-                        for key, value in update_data['$set'].items():
-                            # Handle nested keys like 'profile.skillLevel'
-                            if '.' in key:
-                                keys = key.split('.')
-                                current = doc
-                                for k in keys[:-1]:
-                                    if k not in current:
-                                        current[k] = {}
-                                    current = current[k]
-                                current[keys[-1]] = value
-                            else:
-                                doc[key] = value
-                    
-                    # Apply $inc operations (increment)
-                    if '$inc' in update_data:
-                        for key, value in update_data['$inc'].items():
-                            if '.' in key:
-                                keys = key.split('.')
-                                current = doc
-                                for k in keys[:-1]:
-                                    if k not in current:
-                                        current[k] = {}
-                                    current = current[k]
-                                current[keys[-1]] = current.get(keys[-1], 0) + value
-                            else:
-                                doc[key] = doc.get(key, 0) + value
-                    
-                    # Apply $push operations (add to array)
-                    if '$push' in update_data:
-                        for key, value in update_data['$push'].items():
-                            if '.' in key:
-                                keys = key.split('.')
-                                current = doc
-                                for k in keys[:-1]:
-                                    if k not in current:
-                                        current[k] = {}
-                                    current = current[k]
-                                if keys[-1] not in current:
-                                    current[keys[-1]] = []
-                                current[keys[-1]].append(value)
-                            else:
-                                if key not in doc:
-                                    doc[key] = []
-                                doc[key].append(value)
-                    
-                    print(f"🔄 Updated document: {doc.get('_id', 'unknown')}")
-                    return {"matched_count": 1, "modified_count": 1}
+            # Apply $inc operations
+            if '$inc' in update_data:
+                for key, value in update_data['$inc'].items():
+                    doc[key] = doc.get(key, 0) + value
             
-            # If no document found and upsert=True, create new document
-            if not doc_found and upsert:
-                new_doc = dict(filter_query)
-                new_doc["_id"] = f"mock_id_{len(self._data)+1}"
-                
-                if '$set' in update_data:
-                    for key, value in update_data['$set'].items():
-                        if '.' in key:
-                            keys = key.split('.')
-                            current = new_doc
-                            for k in keys[:-1]:
-                                if k not in current:
-                                    current[k] = {}
-                                current = current[k]
-                            current[keys[-1]] = value
-                        else:
-                            new_doc[key] = value
-                
-                self._data.append(new_doc)
-                print(f"🆕 Created new document via upsert: {new_doc['_id']}")
-                return {"matched_count": 0, "modified_count": 0, "upserted_id": new_doc["_id"]}
+            # Apply $push operations
+            if '$push' in update_data:
+                for key, value in update_data['$push'].items():
+                    if key not in doc:
+                        doc[key] = []
+                    doc[key].append(value)
             
-            # No document found and no upsert
-            print(f"❌ No document found for filter: {filter_query}")
-            return {"matched_count": 0, "modified_count": 0}
+            self._save_data()  # ✅ Save after update
+            return {"matched_count": 1, "modified_count": 1}
             
-        except Exception as e:
-            print(f"❌ MockCollection update_one error: {e}")
-            return {"matched_count": 0, "modified_count": 0}
+        if upsert:
+            new_doc = dict(filter_query)
+            if '$set' in update_data:
+                new_doc.update(update_data['$set'])
+            self.insert_one(new_doc)
+            return {"matched_count": 0, "modified_count": 0, "upserted_id": "new"}
+            
+        return {"matched_count": 0, "modified_count": 0}
+
+    def aggregate(self, pipeline):
+        """Simple mock aggregation support"""
+        # Only supports basic $match and $group for now
+        result = self._data
+        
+        for stage in pipeline:
+            if "$match" in stage:
+                query = stage["$match"]
+                result = [doc for doc in result if all(doc.get(k) == v for k, v in query.items())]
+            elif "$group" in stage:
+                # Very basic grouping - only supports averaging
+                group = stage["$group"]
+                if "_id" in group and group["_id"] is None:
+                    # Global aggregation
+                    for field, expr in group.items():
+                        if field == "_id": continue
+                        if "$avg" in expr:
+                            target_field = expr["$avg"].replace("$", "")
+                            values = [doc.get(target_field, 0) for doc in result if isinstance(doc.get(target_field), (int, float))]
+                            avg = sum(values) / len(values) if values else 0
+                            return [{"_id": None, field: avg}]
+                            
+        return result
 
 if use_mock_db:
-    # Mock collections - Enhanced with duplicate prevention
-    users_col = MockCollection()
-    courses_col = MockCollection()
-    quizzes_col = MockCollection()
-    attempts_col = MockCollection()
-    events_col = MockCollection()
-    profiles_col = MockCollection()
-    templates_col = MockCollection()
+    # Mock collections with persistence
+    users_col = MockCollection("users")
+    courses_col = MockCollection("courses")
+    quizzes_col = MockCollection("quizzes")
+    attempts_col = MockCollection("attempts")
+    events_col = MockCollection("events")
+    profiles_col = MockCollection("profiles")
+    templates_col = MockCollection("templates")
 
     def ensure_indexes():
-        print("📝 Mock database - indexes skipped (duplicate prevention built-in)")
+        print("📝 Mock database - indexes skipped (using persistent JSON files)")
         pass
 else:
     # Real database collections
@@ -351,7 +334,7 @@ else:
         try:
             # ✅ CREATE UNIQUE INDEXES TO PREVENT DUPLICATES
             users_col.create_index("email", unique=True)
-            profiles_col.create_index("studentId", unique=True)  # ✅ PREVENT DUPLICATE PROFILES
+            profiles_col.create_index("studentId", unique=True)
             templates_col.create_index("user_id")
             
             # Additional useful indexes
