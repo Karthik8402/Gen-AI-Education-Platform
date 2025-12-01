@@ -9,6 +9,7 @@ from utils.auth import create_token, auth_required, validate_email
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.post("/signup")
+@auth_bp.post("/register")
 def signup():
     body = request.get_json(force=True)
     username = body.get("username", "").strip()
