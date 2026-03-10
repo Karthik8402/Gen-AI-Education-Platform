@@ -78,5 +78,79 @@
       "readabilityScore": 0.5,
       "timestamp": "2025-12-01T10:26:03.487288+00:00"
     }
+  },
+  {
+    "studentId": "69afa29e049fbcb5545b12b4",
+    "profile": {
+      "name": "Karthik K",
+      "skillLevel": "beginner",
+      "skillConfidence": 0.8,
+      "lastSkillUpdate": "2026-03-10T04:48:30.948475+00:00",
+      "strengths": [],
+      "improvement_areas": [],
+      "preferred_topics": []
+    },
+    "demographics": {
+      "name": "Karthik K",
+      "age": 24,
+      "department": "computer-science",
+      "educationLevel": "undergraduate"
+    },
+    "cognitiveProfile": {
+      "learningStyle": "visual"
+    },
+    "performanceMetrics": {
+      "totalAttempts": 0,
+      "averageScore": 37.5,
+      "completionRate": 0.0,
+      "streakDays": 0,
+      "timePerTopic": 0
+    },
+    "updated_at": "2026-03-10T04:48:30.948475+00:00",
+    "created_at": "2026-03-10T04:48:30.948475+00:00",
+    "_id": "69afa29e049fbcb5545b12b5",
+    "placement_completed": true,
+    "lastPredictedLevel": "beginner",
+    "predictionConfidence": 0.9249999999999999,
+    "lastContentTopic": "Java",
+    "contentInteractionAt": "2026-03-10T04:51:31.251277+00:00",
+    "predictionValidation": {
+      "contentQuality": 0.0,
+      "conceptComplexity": 0.5,
+      "readabilityScore": 0.5,
+      "timestamp": "2026-03-10T04:51:31.251278+00:00"
+    }
+  },
+  {
+    "studentId": "69afaa095813da9d46ecb0ac",
+    "profile": {
+      "name": "Karthik K",
+      "skillLevel": "beginner",
+      "skillConfidence": 0.8,
+      "lastSkillUpdate": "2026-03-10T05:20:10.058522+00:00",
+      "strengths": [],
+      "improvement_areas": [],
+      "preferred_topics": []
+    },
+    "demographics": {
+      "name": "Karthik K",
+      "age": 24,
+      "department": "computer-science",
+      "educationLevel": "undergraduate"
+    },
+    "cognitiveProfile": {
+      "learningStyle": "visual"
+    },
+    "performanceMetrics": {
+      "totalAttempts": 0,
+      "averageScore": 25.0,
+      "completionRate": 0.0,
+      "streakDays": 0,
+      "timePerTopic": 0
+    },
+    "updated_at": "2026-03-10T05:20:10.058522+00:00",
+    "created_at": "2026-03-10T05:20:10.058522+00:00",
+    "_id": "69afaa0a5813da9d46ecb0ad",
+    "placement_completed": true
   }
 ]

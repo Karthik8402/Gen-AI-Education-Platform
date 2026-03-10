@@ -35,6 +35,7 @@ joblib==1.5.1
 
 # NLP (spacy only)
 spacy==3.8.1
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0.tar.gz
 nltk==3.9.1
 textstat==0.7.10
 regex==2025.7.34

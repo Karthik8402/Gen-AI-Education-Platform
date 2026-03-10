@@ -130,5 +130,71 @@
     ],
     "created_at": "2025-12-01T08:58:51.753736+00:00",
     "_id": "692d58cbf399e458bbb3ae79"
+  },
+  {
+    "user_id": "69afa29e049fbcb5545b12b4",
+    "type": "practice",
+    "topic": "Java",
+    "category": "Education",
+    "difficulty": "beginner",
+    "questions": [
+      {
+        "question": "Which of the following is the correct signature for the `main` method in a Java application, which serves as its entry point?",
+        "choices": [
+          "public static void main(String args[])",
+          "public void main(String[] args)",
+          "static void main(String... args)",
+          "public static int main(String[] args)"
+        ],
+        "answer": "public static void main(String args[])",
+        "explanation": "The `main` method must be `public` (accessible from anywhere), `static` (can be called without creating an object of the class), `void` (does not return any value), and accept a `String` array as an argument. Both `String args[]` and `String[] args` are valid for the array parameter."
+      },
+      {
+        "question": "Consider a scenario where you need to store a user's age, which is a whole number. Which of the following is the most appropriate data type and correct way to declare a variable named `userAge` and initialize it to 25?",
+        "choices": [
+          "Integer userAge = 25;",
+          "int userAge = 25;",
+          "String userAge = \"25\";",
+          "double userAge = 25;"
+        ],
+        "answer": "int userAge = 25;",
+        "explanation": "For storing whole numbers like age, the `int` primitive data type is the most memory-efficient and appropriate choice. `Integer` is a wrapper class, `String` stores text, and `double` stores floating-point numbers."
+      },
+      {
+        "question": "What will be the output of the following Java code snippet?",
+        "choices": [
+          "Excellent",
+          "Good",
+          "Pass",
+          "GoodPass"
+        ],
+        "answer": "Good",
+        "explanation": "The `score` is 85. The first condition `score >= 90` (85 >= 90) is false. The second condition `score >= 75` (85 >= 75) is true, so 'Good' is printed, and the `if-else if-else` block terminates."
+      },
+      {
+        "question": "You want to print numbers from 1 to 3, each on a new line. Which of the following `for` loops correctly achieves this?",
+        "choices": [
+          "for (int i = 1; i <= 3; i++) { System.out.println(i); }",
+          "for (int i = 0; i < 3; i++) { System.out.println(i); }",
+          "for (int i = 1; i < 3; i++) { System.out.println(i); }",
+          "for (int i = 1; i >= 3; i++) { System.out.println(i); }"
+        ],
+        "answer": "for (int i = 1; i <= 3; i++) { System.out.println(i); }",
+        "explanation": "This loop initializes `i` to 1, continues as long as `i` is less than or equal to 3, and increments `i` by 1 in each iteration. This will correctly print 1, then 2, then 3. Other options either start from 0, stop too early, or don't execute at all."
+      },
+      {
+        "question": "In Java, if you have a class named `Book`, how would you create a new instance (object) of this class and assign it to a variable named `myBook`?",
+        "choices": [
+          "Book myBook = new Book();",
+          "new Book();",
+          "Book myBook;",
+          "myBook = Book.create();"
+        ],
+        "answer": "Book myBook = new Book();",
+        "explanation": "To create an object (instance) of a class, you use the `new` keyword followed by the class constructor (`Book()`). The result is then assigned to a variable of the class type, in this case, `myBook` of type `Book`."
+      }
+    ],
+    "created_at": "2026-03-10T04:53:05.393187+00:00",
+    "_id": "69afa3b1049fbcb5545b12b6"
   }
 ]

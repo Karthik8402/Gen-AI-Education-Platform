@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 import logging
 import os
@@ -37,6 +37,9 @@ def load_spacy_model():
     logger.error("❌ No spaCy model found. Install with: python -m spacy download en_core_web_sm")
     return None, None
 
+app = Flask(__name__, static_folder='static', static_url_path='/')
+CORS(app)
+
 nlp, spacy_model = load_spacy_model()
 
 # Register Blueprints
@@ -46,9 +49,19 @@ app.register_blueprint(quiz_bp, url_prefix='/api/quiz')
 app.register_blueprint(analytics_bp, url_prefix='/api/analytics')
 app.register_blueprint(content_bp, url_prefix='/api/content')
 
-@app.route("/")
-def home():
+@app.route('/api/health')
+def health():
     return {"status": "online", "message": "Gen-AI Education Platform API is running"}
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve(path):
+    if path != "" and os.path.exists(app.static_folder + '/' + path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, 'index.html')
+
+application = app
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

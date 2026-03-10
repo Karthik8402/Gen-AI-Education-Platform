@@ -20,6 +20,8 @@ try:
     
 except (ConnectionFailure, ConfigurationError) as e:
     print(f"❌ MongoDB connection failed: {e}")
+    if os.getenv("FLASK_ENV") == "production":
+        raise Exception("MongoDB is required in production deployment. Please configure MONGODB_URI.")
     print("🔄 Using persistent mock database for development")
     use_mock_db = True
 
